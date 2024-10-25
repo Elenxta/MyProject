@@ -1,0 +1,45 @@
+﻿@page "/Booking"
+@using MyProject.Context
+@using MyProject.Model
+@inject ServicesProvider ServicesProvider
+
+
+<h3>Create a booking </h3>
+<h3>services provided</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">price</th>
+            <th scope="col">description</th>
+            <th scope="col">Duration</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var services in services)
+        
+        {
+            <tr>
+                <th scope="row">@services.Id</th>
+                <td>@services.Name</td>
+                <td>@services.Price</td>
+                <td>@services.Duration</td>
+                <td>@services.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>
+@code {
+    private IEnumerable <Service> services;
+
+    protected override async Task OnInitializedAsync()
+    {
+        services = await ServicesProvider.GetAllServicesAsync();
+    }
+
+    
+
+
+}
