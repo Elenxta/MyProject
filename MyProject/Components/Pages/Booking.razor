@@ -4,7 +4,7 @@
 @inject ServicesProvider ServicesProvider
 
 
-<h3 class="text-center text-pink mb-5">Create a Booking</h3>
+<h3 class="text-center mb-4" style="color: #d63384; font-weight: bold;">Create a Booking</h3>
 
 <div class="container my-5">
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -12,20 +12,20 @@
         {
             <EditForm Model="quantity" OnSubmit="Book">
                 <div class="col">
-                    <div class="card h-100 pink-card shadow">
+                    <div class="card h-100 background shadow-sm">
                         <div class="card-body d-flex flex-column">
-                            <!-- Service Name and Price -->
-                            <div class="d-flex justify-content-between">
-                                <h5 class="card-title text-pink-dark">@service.Name</h5>
-                                <h5><span class="badge bg-danger text-light price-badge">@service.Price.ToString("C")</span></h5>
+                            <!---->
+                            <div class="d-flex justify-content-between mb-3">
+                                <h5 class="card-title">@service.Name</h5>
+                                <h5><span class="badge bg-pink">@service.Price.ToString("C")</span></h5>
                             </div>
 
                             <!-- Service Description -->
-                            <p class="card-text text-muted">@service.Description</p>
+                            <p class="card-text">@service.Description</p>
 
                             <!-- Book Button -->
                             <div class="mt-auto">
-                                <button type="submit" class="btn btn-pink-gradient w-100">Book</button>
+                                <button type="submit" class="btn custom-book-btn w-100">💖 Book Now</button>
                             </div>
                         </div>
                     </div>
@@ -34,35 +34,30 @@
         }
     </div>
 </div>
+
 <style>
-    /* Girly Theme Styling */
-    .girly-card {
-        background-color: #ffe6f0; /* Soft pink background */
+    /* Page Styling */
+    .text-center {
+        font-family: 'Arial', sans-serif;
+    }
+
+    .background {
+        background-color: #ffe6f0;
         border: none;
         border-radius: 15px;
         transition: transform 0.3s ease;
     }
 
-        /* Add shadow effect */
-        .girly-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0px 4px 15px rgba(255, 182, 193, 0.5);
-        }
 
-    /* Card Title */
+    /* Card Title Styling */
     .card-title {
-        color: #d63384; /* Vibrant pink for headings */
+        color: #d63384;
         font-weight: bold;
     }
 
-    /* Card Text */
-    .card-text {
-        color: #7a4c66; /* Soft mauve text color */
-    }
-
-    /* Custom Book Button */
+    /* Book Button */
     .custom-book-btn {
-        background-color: #ff69b4; /* Hot pink background */
+        background-color: #ff69b4;
         color: white;
         font-weight: bold;
         border: none;
@@ -71,15 +66,9 @@
         transition: background-color 0.3s ease;
     }
 
-        .custom-book-btn:hover {
-            background-color: #ff1493; /* Darker pink on hover */
-            color: #fff;
-            box-shadow: 0px 3px 10px rgba(255, 105, 180, 0.5);
-        }
-
     /* Badge Styling for Price */
-    .badge.bg-danger {
-        background-color: #ff4c61; /* Bright pink for price badge */
+    .bg-pink {
+        background-color: #ff4c61;
     }
 </style>
 
@@ -88,7 +77,6 @@
     public Service Service { get; set; }
 
     private int quantity = 1;
-
     private IEnumerable<Service> services;
 
     protected override async Task OnInitializedAsync()
@@ -98,10 +86,8 @@
 
     public async Task Book()
     {
-        // Booking logic here
+        // Add booking logic here
     }
-
-    
 }
    
 
