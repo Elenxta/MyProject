@@ -4,39 +4,104 @@
 @inject ServicesProvider ServicesProvider
 
 
-<h3>Create a booking </h3>
+<h3 class="text-center text-pink mb-5">Create a Booking</h3>
+
 <div class="container my-5">
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         @foreach (var service in services)
         {
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between">
-                            <h5 class="card-title">@service.Name</h5>
-                            <h5><span class="badge bg-danger">@service.Price.ToString("C")</span></h5>
+            <EditForm Model="quantity" OnSubmit="Book">
+                <div class="col">
+                    <div class="card h-100 pink-card shadow">
+                        <div class="card-body d-flex flex-column">
+                            <!-- Service Name and Price -->
+                            <div class="d-flex justify-content-between">
+                                <h5 class="card-title text-pink-dark">@service.Name</h5>
+                                <h5><span class="badge bg-danger text-light price-badge">@service.Price.ToString("C")</span></h5>
+                            </div>
+
+                            <!-- Service Description -->
+                            <p class="card-text text-muted">@service.Description</p>
+
+                            <!-- Book Button -->
+                            <div class="mt-auto">
+                                <button type="submit" class="btn btn-pink-gradient w-100">Book</button>
+                            </div>
                         </div>
-                        <p class="card-text">@service.Description</p>
                     </div>
                 </div>
-            </div>
+            </EditForm>
         }
     </div>
 </div>
+<style>
+    /* Girly Theme Styling */
+    .girly-card {
+        background-color: #ffe6f0; /* Soft pink background */
+        border: none;
+        border-radius: 15px;
+        transition: transform 0.3s ease;
+    }
+
+        /* Add shadow effect */
+        .girly-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0px 4px 15px rgba(255, 182, 193, 0.5);
+        }
+
+    /* Card Title */
+    .card-title {
+        color: #d63384; /* Vibrant pink for headings */
+        font-weight: bold;
+    }
+
+    /* Card Text */
+    .card-text {
+        color: #7a4c66; /* Soft mauve text color */
+    }
+
+    /* Custom Book Button */
+    .custom-book-btn {
+        background-color: #ff69b4; /* Hot pink background */
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 20px;
+        padding: 0.75rem;
+        transition: background-color 0.3s ease;
+    }
+
+        .custom-book-btn:hover {
+            background-color: #ff1493; /* Darker pink on hover */
+            color: #fff;
+            box-shadow: 0px 3px 10px rgba(255, 105, 180, 0.5);
+        }
+
+    /* Badge Styling for Price */
+    .badge.bg-danger {
+        background-color: #ff4c61; /* Bright pink for price badge */
+    }
+</style>
+
 @code {
     [Parameter]
     public Service Service { get; set; }
 
     private int quantity = 1;
 
-    private IEnumerable <Service> services;
+    private IEnumerable<Service> services;
 
     protected override async Task OnInitializedAsync()
     {
         services = await ServicesProvider.GetAllServicesAsync();
     }
 
+    public async Task Book()
+    {
+        // Booking logic here
+    }
+
     
-
-
 }
+   
+
