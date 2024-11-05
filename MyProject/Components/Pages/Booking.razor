@@ -1,93 +1,37 @@
 ﻿@page "/Booking"
-@using MyProject.Context
-@using MyProject.Model
-@inject ServicesProvider ServicesProvider
 
 
-<h3 class="text-center mb-4" style="color: #d63384; font-weight: bold;">Create a Booking</h3>
-
-<div class="container my-5">
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        @foreach (var service in services)
-        {
-            <EditForm Model="quantity" OnSubmit="Book">
-                <div class="col">
-                    <div class="card h-100 background shadow-sm">
-                        <div class="card-body d-flex flex-column">
-                            <!---->
-                            <div class="d-flex justify-content-between mb-3">
-                                <h5 class="card-title">@service.Name</h5>
-                                <h5><span class="badge bg-pink">@service.Price.ToString("C")</span></h5>
-                            </div>
-
-                            <!-- Service Description -->
-                            <p class="card-text">@service.Description</p>
-
-                            <!-- Book Button -->
-                            <div class="mt-auto">
-                                <button type="submit" class="btn custom-book-btn w-100">💖 Book Now</button>
-                            </div>
-                        </div>
-                    </div>
+  <div class="container my-5">
+        <div class="card p-4">
+            <h3 class="mb-4">Choose Your Booking Date and Time</h3>
+            <form id="bookingForm">
+                
+                <!-- Date Picker -->
+                <div class="form-group mb-3">
+                    <label for="bookingDate">Select a Date:</label>
+                    <input type="date" id="bookingDate" name="bookingDate" class="form-control" required>
                 </div>
-            </EditForm>
-        }
+
+                <!-- Time Dropdown -->
+                <div class="form-group mb-3">
+                    <label for="bookingTime">Select a Time:</label>
+                    <select id="bookingTime" name="bookingTime" class="form-control" required>
+                        <option value="" disabled selected>Select a time</option>
+                        <option value="09:00">09:00 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="13:00">01:00 PM</option>
+                        <option value="14:00">02:00 PM</option>
+                        <option value="15:00">03:00 PM</option>
+                        <option value="16:00">04:00 PM</option>
+                        <option value="17:00">05:00 PM</option>
+                    </select>
+                </div>
+            <button type="button" onclick="bookService()" class="btn btn-primary mt-3">💖 Book Now</button>
+        </form>
     </div>
 </div>
-
-<style>
-    /* Page Styling */
-    .text-center {
-        font-family: 'Arial', sans-serif;
-    }
-
-    .background {
-        background-color: #ffe6f0;
-        border: none;
-        border-radius: 15px;
-        transition: transform 0.3s ease;
-    }
-
-
-    /* Card Title Styling */
-    .card-title {
-        color: #d63384;
-        font-weight: bold;
-    }
-
-    /* Book Button */
-    .custom-book-btn {
-        background-color: #ff69b4;
-        color: white;
-        font-weight: bold;
-        border: none;
-        border-radius: 20px;
-        padding: 0.75rem;
-        transition: background-color 0.3s ease;
-    }
-
-    /* Badge Styling for Price */
-    .bg-pink {
-        background-color: #ff4c61;
-    }
-</style>
-
 @code {
-    [Parameter]
-    public Service Service { get; set; }
 
-    private int quantity = 1;
-    private IEnumerable<Service> services;
-
-    protected override async Task OnInitializedAsync()
-    {
-        services = await ServicesProvider.GetAllServicesAsync();
-    }
-
-    public async Task Book()
-    {
-        // Add booking logic here
-    }
 }
-   
-
