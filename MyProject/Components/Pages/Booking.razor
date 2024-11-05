@@ -1,7 +1,9 @@
 ﻿@page "/Booking"
+@using MyProject.Context
+@using MyProject.Model
+@inject StylistProvider StylistProvider
 
-
-  <div class="container my-5">
+<div class="container my-5">
         <div class="card p-4">
             <h3 class="mb-4">Choose Your Booking Date and Time</h3>
             <form id="bookingForm">
@@ -28,10 +30,77 @@
                         <option value="17:00">05:00 PM</option>
                     </select>
                 </div>
-            <button type="button" onclick="bookService()" class="btn btn-primary mt-3">💖 Book Now</button>
-        </form>
-    </div>
-</div>
-@code {
 
-}
+                <!-- Book Button -->
+                <button type="button" onclick="bookService()" class="btn btn-primary mt-3">💖 Book Now</button>
+            </form>
+        </div>
+    </div>
+
+<style>
+    /* Pink and Pretty Styles */
+    body {
+        background-color: #ffe6f2;
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        max-width: 500px;
+    }
+
+    .card {
+        background-color: #fff0f5;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h3 {
+        color: #d63384;
+        font-weight: bold;
+    }
+
+    label {
+        color: #d63384;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #f2a6c7;
+    }
+
+        .form-control:focus {
+            border-color: #d63384;
+            box-shadow: 0 0 5px rgba(214, 51, 132, 0.5);
+        }
+
+    .btn-primary {
+        background-color: #d63384;
+        border-color: #d63384;
+        color: #fff;
+        border-radius: 8px;
+        font-weight: bold;
+    }
+
+        .btn-primary:hover {
+            background-color: #c52973;
+            border-color: #c52973;
+        }
+
+    /* Custom pink selection color for options */
+    option {
+        background-color: #ffe6f2;
+        color: #d63384;
+    }
+</style>
+@code {
+    private IEnumerable<Stylist> stylists;
+
+    protected override async Task OnInitializedAsync()
+    {
+        stylists = await StylistProvider.GetStylistsAsync();
+    }
+    
+    
+    }
+

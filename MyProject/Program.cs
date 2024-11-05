@@ -17,6 +17,7 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 builder.Services.AddScoped<DatabaseSeeder>();
 builder.Services.AddScoped<ServicesProvider>();
+builder.Services.AddScoped<StylistProvider>();
 
 
 
