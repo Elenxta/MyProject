@@ -28,6 +28,7 @@
                             <div class="mt-auto">
                                 <button type="submit" class="btn custom-book-btn w-100" @onclick="GoToBooking">💖 Book Now</button>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -38,41 +39,53 @@
 </div>
 
 <style>
-    /* Page Styling */
-    .text-center {
-        font-family: 'Arial', sans-serif;
+/* General Page Styling */
+.text-center {
+    font-family: 'Arial', sans-serif;
+    color: #d63384; /* Consistent pink text color */
+}
+
+.background {
+    background-color: #ffe6f2; /* Light pink background */
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    transition: transform 0.3s ease;
+}
+
+/* Card Title Styling */
+.card-title {
+    color: #d63384;
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+/* Book Button */
+.custom-book-btn {
+    background-color: #d63384; /* Matching dark pink */
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px;
+    padding: 0.75rem 1.25rem;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .custom-book-btn:hover {
+        background-color: #c52973; /* Slightly darker pink on hover */
+        box-shadow: 0px 4px 10px rgba(214, 51, 132, 0.4);
     }
 
-    .background {
-        background-color: #ffe6f0;
-        border: none;
-        border-radius: 15px;
-        transition: transform 0.3s ease;
-    }
-
-
-    /* Card Title Styling */
-    .card-title {
-        color: #d63384;
-        font-weight: bold;
-    }
-
-    /* Book Button */
-    .custom-book-btn {
-        background-color: #ff69b4;
-        color: white;
-        font-weight: bold;
-        border: none;
-        border-radius: 20px;
-        padding: 0.75rem;
-        transition: background-color 0.3s ease;
-    }
-
-    /* Badge Styling for Price */
-    .bg-pink {
-        background-color: #ff4c61;
-    }
+/* Badge Styling for Price */
+.bg-pink {
+    background-color: #ff4c61; /* Vivid pink-red */
+    color: #fff;
+    font-weight: bold;
+    padding: 0.5rem 0.75rem;
+    border-radius: 10px;
+}
 </style>
+
 
 @code {
     [Parameter]
