@@ -1,13 +1,14 @@
-﻿@page "/Booking"
+﻿@page "/Booking/{id:int}"
 @using MyProject.Context
 @using MyProject.Model
 @inject StylistProvider StylistProvider
+@inject ServicesProvider ServicesProvider
 
 <div class="container my-5">
     <div class="card p-4">
         <h3 class="mb-4">Choose Your Booking Date, Time, and Stylist</h3>
         <form id="bookingForm">
-
+            
             <!-- Date Picker -->
             <div class="form-group mb-3">
                 <label for="bookingDate">Select a Date:</label>
@@ -126,10 +127,15 @@
     }
     </style>
 @code {
+    [Parameter]
+    public int Id { get; set; }
+
     private List <Stylist> stylists;
+    private Model.Service service;
 
     protected override async Task OnInitializedAsync()
     {
+        service = await ServicesProvider.GetService(Id);
         stylists = await StylistProvider.GetStylistsAsync();
     }
 
