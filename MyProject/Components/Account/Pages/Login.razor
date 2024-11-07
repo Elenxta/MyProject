@@ -37,7 +37,57 @@
         </EditForm>
     </div>
 </div>
+<style>
+    .card {
+        border: 1px solid #ff99cc;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
+    .card-body {
+        background-color: #ffe6f2;
+        padding: 2rem;
+    }
+
+    .card-title {
+        color: #ff66a3;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .form-label {
+        color: #ff66a3;
+    }
+
+    .form-control {
+        border-color: #ff99cc;
+        background-color: #ffe6f2;
+    }
+
+        .form-control::placeholder {
+            color: #ff66a3;
+        }
+
+    .btn-primary {
+        background-color: #ff66a3;
+        border-color: #ff66a3;
+    }
+
+        .btn-primary:hover {
+            background-color: #ff3399;
+            border-color: #ff3399;
+        }
+
+    .btn-success {
+        background-color: #ff99cc;
+        border-color: #ff99cc;
+    }
+
+        .btn-success:hover {
+            background-color: #ff66a3;
+            border-color: #ff66a3;
+        }
+</style>
 @code {
     private string? statusMessage;
     private bool isError;

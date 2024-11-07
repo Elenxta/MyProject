@@ -17,52 +17,127 @@
 
 <PageTitle>Register</PageTitle>
 <StatusMessage Message="@statusMessage" IsError="@isError" />
-
 <div class="card">
     <div class="card-body bg-light">
         <h4 class="card-title">Register</h4>
 
-        <EditForm OnInvalidSubmit="RegisterUser" Model="Model" FormName="registerForm">
+        <EditForm OnValidSubmit="RegisterUser" Model="Model" FormName="registerForm">
+            <DataAnnotationsValidator/>
             <div class="row g-3">
                 <div class="col-md-12">
                     <label for="email" class="form-label">Email</label>
                     <InputText class="form-control" placeholder="Email" @bind-Value="Model.Email" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.Email)" />
+                    </div>
                 </div>
                 <div class="col-md-6">
                     <label for="password" class="form-label">Password</label>
                     <InputText type="password" class="form-control" placeholder="Password" @bind-Value="Model.Password" />
-                </div>
-                <div class="col-md-6">
-                    <label for="name" class="form-label">Confirm Password</label>
-                    <InputText type="password" class="form-control" placeholder="Confirm Password" @bind-Value="Model.ConfirmPassword" />
                     <div class="small">
-                        <ValidationMessage For="@(() => Model!.ConfirmPassword)"/>
+                        <ValidationMessage For="@(() => Model!.Password)" />
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <label for="firstname" class="form-label"> FirstName</label>
-                    <InputText type="firstname" class="form-control" placeholder="First Name" @bind-Value="Model.FirstName" />
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <InputText type="password" class="form-control" placeholder="Confirm Password" @bind-Value="Model.ConfirmPassword" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.ConfirmPassword)" />
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <label for="lastname" class="form-label"> LastName</label>
-                    <InputText type="lastname" class="form-control" placeholder="Last Name" @bind-Value="Model.LastName" />
+                    <label for="firstName" class="form-label">First Name</label>
+                    <InputText class="form-control" placeholder="First Name" @bind-Value="Model.FirstName" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.FirstName)" />
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <label for="phonenumber" class="form-label"> PhoneNumber</label>
-                    <InputText type="PhoneNumber" class="form-control" placeholder="PhoneNumber" @bind-Value="Model.PhoneNumber" />
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <InputText class="form-control" placeholder="Last Name" @bind-Value="Model.LastName" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.LastName)" />
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <label for="notes" class="form-label"> Notes</label>
-                    <InputText type="Notes you may have     " class="form-control" placeholder="Notes" @bind-Value="Model.Notes" />
-               
-                 <div class="col-md-2">
-                 <button type="submit" class="btn btn-primary w-100">Register</button>
-                 </div>
-            </div>   
-                </div>  
+                    <label for="phoneNumber" class="form-label">Phone Number</label>
+                    <InputText class="form-control" placeholder="Phone Number" @bind-Value="Model.PhoneNumber" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.PhoneNumber)" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="notes" class="form-label">Notes</label>
+                    <InputText class="form-control" placeholder="Notes" @bind-Value="Model.Notes" />
+                    <div class="small">
+                        <ValidationMessage For="@(() => Model!.Notes)" />
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Register</button>
+                </div>
+            </div>
         </EditForm>
     </div>
 </div>
+<style>
+    /* Card and Background */
+    .register-card {
+        border: none;
+        border-radius: 10px;
+        background-color: #ffe6f0;
+        padding: 2rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .register-card-body {
+        background-color: #fff5f8;
+        border-radius: 8px;
+        padding: 2rem;
+    }
+
+    /* Title */
+    .card-title {
+        color: #ff4f8b;
+        font-weight: bold;
+    }
+
+    /* Input Fields */
+    .input-pink {
+        border: 1px solid #ffb3c6;
+        border-radius: 5px;
+        background-color: #ffe6f0;
+        color: #6c6c6c;
+    }
+
+        .input-pink:focus {
+            border-color: #ff4f8b;
+            box-shadow: 0 0 5px rgba(255, 79, 139, 0.5);
+        }
+
+    /* Labels */
+    .form-label {
+        color: #ff4f8b;
+        font-weight: 600;
+    }
+
+    /* Validation Messages */
+    .text-danger {
+        color: #ff4f8b;
+    }
+
+    /* Button */
+    .btn-primary {
+        background-color: #ff4f8b;
+        border: none;
+        color: #ffffff;
+        font-weight: bold;
+    }
+
+        .btn-primary:hover {
+            background-color: #e63e7b;
+        }
+</style>
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
@@ -77,6 +152,8 @@
     private bool isError;
 
     public async Task RegisterUser(EditContext editContext)
+
+    
     {
         var user = new User
             {
@@ -114,7 +191,8 @@
 
         [Required(ErrorMessage = "Please confirm password")]
         [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage =" The passwords do not match")]
+        [Compare("Password", ErrorMessage =" The passwords do not match")] // compare passwords
+
         public string ConfirmPassword { get; set; } = "";
 
         [Required(ErrorMessage = "Please enter your first name ")]
