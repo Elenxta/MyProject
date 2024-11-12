@@ -1,0 +1,137 @@
+﻿<h3>Checkout</h3>
+@using Microsoft.AspNetCore.Components.Authorization
+@using MyProject.Context
+@using MyProject.Model
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager NavigationManager 
+
+@page "/checkout"
+
+<div class="card mb-1">
+    <div class="card-body bg-light">
+        <h4 class="card-title">Order Summary</h4>
+        <CartSummary />
+    </div>
+</div>    
+
+<EditForm EditContext="editContext" OnValidSubmit="MakePayment">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    
+        
+        <div class="col-lg-6 col-12 mt-lg-1 mt-2">
+            <div class="card h-100">
+                <div class="card-body bg-light">
+                    <h4 class="card-title">Payment</h4>
+                    
+                    <div class="form-group mb-1">
+                        <label class="form-label">Name on Card</label>
+                        <InputText class="form-control" placeholder="@GetFormattedName(user)" @bind-Value="paymentDetails.NameOnCard" />
+                        <ValidationMessage For="@(() => paymentDetails.NameOnCard)" />
+                    </div>
+                    
+                    <div class="form-group mb-1">
+                        <label class="form-label">Card Number</label>
+                        <InputText class="form-control" placeholder="0000-0000-0000-0000" @bind-Value="paymentDetails.CardNumber" />
+                        <ValidationMessage For="@(() => paymentDetails.CardNumber)" />
+                    </div>
+                    
+                    <div class="form-group mb-1">
+                        <label class="form-label">Expiry Date</label>
+                        <InputText class="form-control" placeholder="MM/YY" @bind-Value="paymentDetails.ExpiryDate" />
+                        <ValidationMessage For="@(() => paymentDetails.ExpiryDate)" />
+                    </div>
+                    
+                    <div class="form-group mb-1">
+                        <label class="form-label">Security Code</label>
+                        <InputText class="form-control" placeholder="123" @bind-Value="paymentDetails.SecurityCode" />
+                        <ValidationMessage For="@(() => paymentDetails.SecurityCode)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+   
+    
+    <div class="text-center mt-3">
+        <button type="submit" class="btn btn-primary">Complete Payment</button>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <div>
+            <button type="button" class="btn btn-outline-danger" @onclick="MakePayment" disabled="@isPaying">
+                @if (isPaying)
+                {
+                    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                }
+                else
+                {
+                    <span>💳</span>
+                }
+                <span> Pay Now</span>
+            </button>
+        </div>
+    </div>
+
+</EditForm>
+ 
+@code {
+    private User user;
+    private PaymentDetails paymentDetails;
+    private EditContext editContext;
+    private bool isPaying;
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     paymentDetails = new PaymentDetails();
+    //     editContext = new EditContext(paymentDetails);
+
+    //     var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    //     var username = authState?.User?.Identity?.Name;
+    //     if (username != null)
+    //     {
+    //         user = User.GetUserBy(username)!;
+    //     }
+    // }
+
+    private async Task MakePayment()
+    {
+        isPaying = true;
+        StateHasChanged();
+
+        await SimulatePayment();
+
+        // Assuming payment success
+        
+
+        NavigationManager.NavigateTo("/thankyou");
+
+        isPaying = false;
+        StateHasChanged();
+    }
+
+    private async Task SimulatePayment()
+    {
+        await Task.Delay(2000); // Simulate delay for payment processing
+    }
+
+    private string GetFormattedName(User user) => $"{user.FirstName} {user.LastName}";
+
+    private sealed class PaymentDetails
+    {
+        [Required(ErrorMessage = "Name on card is required.")]
+        public string NameOnCard { get; set; }
+
+        [Required(ErrorMessage = "Card number is required.")]
+       
+        public string CardNumber { get; set; }
+
+        [Required(ErrorMessage = "Expiry date is required.")]
+       
+        public string ExpiryDate { get; set; }
+
+        [Required(ErrorMessage = "Security code is required.")]
+       
+        public string SecurityCode { get; set; }
+    }
+}

@@ -56,7 +56,7 @@
             
             <!-- Book Button -->
             <button type="button" class="btn btn-primary mt-3" @onclick="() => GoToThankYou()">💖 pay instore</button>
-            <button type="button" class="btn btn-primary btn-sm">pay online</button>
+            <button type="button" class="btn btn-primary mt-3" @onclick="() => GoToCheckOut()">💖pay online</button>
             
 
         </form>
@@ -121,23 +121,35 @@
 @code {
     [Parameter]
     public int Id { get; set; }
+    public DateTime BookingDate { get; set; }
+    public string BookingTime { get; set; }
+    public int SelectedStylistId { get; set; }
 
     private List <Stylist> stylists;
     private Model.Service service;
 
     protected override async Task OnInitializedAsync()
     {
+        // Fetches the details of a specific service based on the provided Id.
         service = await ServicesProvider.GetService(Id);
+
+        // Fetches the list of stylists available for selection.
         stylists = await StylistProvider.GetStylistsAsync();
     }
 
+    // Holds the ID or name of the currently selected stylist, allowing tracking of the user's selection.
     private string selectedStylist { get; set; }
-
-
+   
     public void GoToThankYou()
     {
 
         NavigationManager.NavigateTo($"/thankyou/");
+    }
+
+    public void GoToCheckOut()
+    {
+
+        NavigationManager.NavigateTo($"/checkout/");
     }
 }
 
