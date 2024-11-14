@@ -66,13 +66,6 @@
                         <ValidationMessage For="@(() => Model!.PhoneNumber)" />
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <label for="notes" class="form-label">Notes</label>
-                    <InputText class="form-control" placeholder="Notes" @bind-Value="Model.Notes" />
-                    <div class="small">
-                        <ValidationMessage For="@(() => Model!.Notes)" />
-                    </div>
-                </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary w-100">Register</button>
                 </div>
@@ -204,9 +197,7 @@
         [Required(ErrorMessage = "Please enter your phone number  ")]
         public string PhoneNumber { get; set; } = "";
 
-        [Required(ErrorMessage = "Please enter your any notes you have")]
-        public string Notes{ get; set; } = "";
-
+       
 
 
 

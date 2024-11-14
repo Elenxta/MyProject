@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using MyProject.Components.Account;
 using MyProject.Context;
 using MyProject.Model;
+using System.Threading.RateLimiting;
+using MyCheeseShop.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +20,8 @@ builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuth
 builder.Services.AddScoped<DatabaseSeeder>();
 builder.Services.AddScoped<ServicesProvider>();
 builder.Services.AddScoped<StylistProvider>();
-
+builder.Services.AddScoped<BookingProvider>();
+builder.Services.AddScoped<UserProvider>();
 
 
 

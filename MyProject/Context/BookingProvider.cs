@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MyProject.Components.Pages;
 using MyProject.Model;
+
 
 namespace MyProject.Context
 {
@@ -13,28 +13,28 @@ namespace MyProject.Context
         {
             _context = context;
         }
-
-        //public async Task CreateBooking(User user, IEnumerable<Service> service)
+        
+        //public async Task CreateBooking(User user, int serviceId, DateTime date, TimeSpan time, string, )
         //{
+        //    // get the stylist from the database
+        //    return await _context.Stylist.OrderBy(Stylist => stylist .Id).ToListAsync();
+
+        //    // get the service from the database
+
+
         //    // Create a new booking
         //    var booking = new Booking
         //    {
         //        User = user,
-        //        Boooking = booking.Select(bookings => new Booking
-        //        {
-        //            Service = bookings.Service,       // Service being booked
-        //            Duration = bookings.Duration,     // Duration of the service
-        //            Stylist = bookings.Stylist
-        //        }).ToList(),
         //        Created = DateTime.Now,
-
+                
         //    };
 
         //    // Add the booking to the database
         //    _context.Bookings.Add(booking);
         //    await _context.SaveChangesAsync();
-
         //}
     }
 }
-    
+
+
