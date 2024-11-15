@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using MyProject.Context
 @using MyProject.Model 
+@using System.ComponentModel.DataAnnotations
 @inject StylistProvider StylistProvider
 @inject ServicesProvider ServicesProvider
 @inject NavigationManager NavigationManager 
@@ -12,19 +13,22 @@
 <div class="container my-5">
     <div class="card p-4">
         <h3 class="mb-4">Choose Your Booking Date, Time, and Stylist</h3>
-        <form id="bookingForm">
-            
+        <EditForm Model="@this" OnValidSubmit="MakeBooking">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
             <!-- Date Picker -->
             <div class="form-group mb-3">
                 <label for="bookingDate">Select a Date:</label>
-                <input type="date" id="bookingDate" name="bookingDate" class="form-control" required>
+                <InputDate id="bookingDate" @bind-Value="BookingDate" class="form-control" />
+                <ValidationMessage For="@(() => BookingDate)" />
             </div>
 
             <!-- Time Dropdown -->
             <div class="form-group mb-3">
                 <label for="bookingTime">Select a Time:</label>
-                <select id="bookingTime" name="bookingTime" class="form-control" required>
-                    <option value="" disabled selected>Select a time</option>
+                <InputSelect id="bookingTime" @bind-Value="BookingTime" class="form-control">
+                    <option value="" disabled>Select a time</option>
                     <option value="09:00">09:00 AM</option>
                     <option value="09:30">09:30 AM</option>
                     <option value="10:00">10:00 AM</option>
@@ -43,31 +47,37 @@
                     <option value="16:30">04:30 PM</option>
                     <option value="17:00">05:00 PM</option>
                     <option value="17:30">05:30 PM</option>
-                </select>
+                </InputSelect>
+                <ValidationMessage For="@(() => BookingTime)" />
             </div>
 
             <!-- Stylist Dropdown -->
             <div class="form-group mb-3">
                 <label for="stylist">Select a Stylist:</label>
-                <select id="stylist" class="form-control" @bind="selectedStylist" required>
-                    <option value="" disabled selected>Select a stylist</option>
+                <InputSelect id="stylist" @bind-Value="SelectedStylistId" class="form-control">
+                    <option value="" disabled>Select a stylist</option>
                     @foreach (var stylist in stylists)
                     {
                         <option value="@stylist.Id">@stylist.Name</option>
                     }
-                </select>
+                </InputSelect>
+                <ValidationMessage For="@(() => SelectedStylistId)" />
             </div>
+
+            <!-- Notes -->
             <div class="form-group mb-3">
                 <label for="note">Add a Note:</label>
                 <textarea id="note" class="form-control" rows="3" placeholder="Add any additional notes here..."></textarea>
             </div>
-            <!-- Book Button -->
-            <button type="button" class="btn btn-primary mt-3" @onclick="() => MakeBooking()">💖pay online</button>
-            
 
-        </form>
+            <!-- Book Button -->
+            <button type="submit" class="btn btn-primary mt-3">💖 Pay Online</button>
+        </EditForm>
     </div>
 </div>
+
+   
+
 <style>
     /* Pink and Pretty Styles */
     body {
@@ -125,6 +135,21 @@
     }
     </style>
 @code {
+
+
+    public class CreateBooking
+    {
+        [Required(ErrorMessage = "Please select a date.")]
+        [DataType(DataType.Date)]
+        public DateTime Date { get; set; }
+
+        [Required(ErrorMessage = "Please select a time.")]
+        public string Time { get; set; }
+
+        [Required(ErrorMessage = "Please select a stylist.")]
+        public int StylistId { get; set; }
+    }
+
     [Parameter]
     public int Id { get; set; }
     public DateTime BookingDate { get; set; }
@@ -133,6 +158,8 @@
 
     private List <Stylist> stylists;
     private Model.Service service;
+
+    
 
     protected override async Task OnInitializedAsync()
     {

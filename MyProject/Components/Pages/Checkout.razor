@@ -5,7 +5,8 @@
 @using System.ComponentModel.DataAnnotations
 @inject NavigationManager NavigationManager 
 
-@page "/checkout"
+
+@page "/checkout/"
 
 <div class="card mb-1">
     <div class="card-body bg-light">
@@ -17,9 +18,6 @@
 <EditForm EditContext="editContext" OnValidSubmit="MakePayment">
     <DataAnnotationsValidator />
     <ValidationSummary />
-
-    
-        
         <div class="col-lg-6 col-12 mt-lg-1 mt-2">
             <div class="card h-100">
                 <div class="card-body bg-light">
