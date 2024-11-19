@@ -16,7 +16,7 @@
         <div class="col-md-6">
             <div class="card p-4 shadow">
                 <h3 class="mb-4 text-center">Booking Details</h3>
-                <EditForm Model="@this" OnValidSubmit="MakeBooking">
+                <EditForm Model="@this" OnValidSubmit="CreateBooking">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
 
@@ -77,7 +77,7 @@
 
                     <!-- Notes Section -->
                     <div class="form-group mb-3">
-                        <textarea id="notes" class="form-control" rows="4"></textarea>
+                        <textarea id="notes" class="form-control" rows="4"> </textarea>
                     </div>
                 </EditForm>
             </div>
@@ -113,7 +113,7 @@
                     </div>
 
                     <!-- Pay Button -->
-                    <button type="button" class="btn btn-success btn-lg w-100 mt-3" @onclick="MakeBooking">💳 Pay Now</button>
+                    <button type="button" class="btn btn-success btn-lg w-100 mt-3" @onclick="CreateBooking">💳 Pay Now</button>
                 </form>
             </div>
         </div>
@@ -153,10 +153,10 @@
         border: 1px solid #f2a6c7; /* Light pink border */
     }
 
-    .form-control:focus {
-        border-color: #d63384; /* Pink focus border */
-        box-shadow: 0px 0px 6px rgba(214, 51, 132, 0.5); /* Soft pink focus glow */
-    }
+        .form-control:focus {
+            border-color: #d63384; /* Pink focus border */
+            box-shadow: 0px 0px 6px rgba(214, 51, 132, 0.5); /* Soft pink focus glow */
+        }
 
     .btn-primary {
         background-color: #d63384;
@@ -165,20 +165,20 @@
         border-radius: 10px;
     }
 
-    .btn-primary:hover {
-        background-color: #c52973; /* Darker pink for hover */
-    }
+        .btn-primary:hover {
+            background-color: #c52973; /* Darker pink for hover */
+        }
 
-    .btn-success {w
-        background-color: #ff66b2; /* Bright girly pink */
+    .btn-success {
+        w background-color: #ff66b2; /* Bright girly pink */
         border-color: #ff66b2;
         color: #fff;
         border-radius: 10px;
     }
 
-    .btn-success:hover {
-        background-color: #ff3385; /* Darker pink for hover */
-    }
+        .btn-success:hover {
+            background-color: #ff3385; /* Darker pink for hover */
+        }
 
     .alert-info {
         background-color: #ffe6f2; /* Light pink background */
@@ -188,7 +188,7 @@
 
 @code {
 
-    public class CreateBooking
+    public class BookingErrors
     {
         [Required(ErrorMessage = "Please select a date.")]
         [DataType(DataType.Date)]
@@ -200,7 +200,7 @@
         [Required(ErrorMessage = "Please select a stylist.")]
         public int StylistId { get; set; }
     }
-
+       
     [Parameter]
     public int Id { get; set; }
     public DateTime BookingDate { get; set; }
@@ -221,7 +221,7 @@
         stylists = await StylistProvider.GetStylistsAsync();
     }
 
-    public async void MakeBooking()
+    public async void CreateBooking()
     {
         // gets the logged in user
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -231,7 +231,7 @@
         // Add logic to save the booking to the database here
 
         // Redirect to checkout or booking confirmation page after the booking is made.
-        NavigationManager.NavigateTo($"/checkout/");
+        NavigationManager.NavigateTo($"/Thankyou/");
     }
 
     private sealed class PaymentDetails
