@@ -1,11 +1,237 @@
 ﻿@page "/Reviews"
 @using MyProject.Context
 @using MyProject.Model
-<h3>Review Page</h3>
-<h3 class="text-center mb-4" style="color: #d63384; font-weight: bold;">Customer Reviews</h3>
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager NavigationManager
+@inject StylistProvider StylistProvider
+@inject ServicesProvider ServicesProvider
 
 
+<div class="container my-5">
+    <div class="row">
+        <!-- Left Column: Review Form Section -->
+        <div class="col-lg-6 mb-5">
+            <div class="card shadow-lg p-5" style="border-radius: 20px; background-color: #f9e0f7;">
+                <h3 class="mb-4 text-center text-pink font-weight-bold">Write a Review</h3>
+                <EditForm Model="@review" OnValidSubmit="SubmitReview">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <!-- Service Dropdown -->
+                    <div class="form-group mb-4">
+                        <label for="service" class="font-weight-bold text-pink">Select Service:</label>
+                        <InputSelect id="service" @bind-Value="review.ServiceId" class="form-control form-control-lg">
+                            <option value="0" disabled>Select a service</option>
+                            @foreach (var service in services)
+                            {
+                                <option value="@service.Id">@service.Name</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => review.ServiceId)" />
+                    </div>
+
+                    <!-- Stylist Dropdown -->
+                    <div class="form-group mb-4">
+                        <label for="stylist" class="font-weight-bold text-pink">Select Stylist:</label>
+                        <InputSelect id="stylist" @bind-Value="review.StylistId" class="form-control form-control-lg">
+                            <option value="0" disabled>Select a stylist</option>
+                            @foreach (var stylist in stylists)
+                            {
+                                <option value="@stylist.Id">@stylist.Name</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => review.StylistId)" />
+                    </div>
+
+                    <!-- Star Rating Dropdown -->
+                    <div class="form-group mb-4">
+                        <label for="rating" class="font-weight-bold text-pink">Select Rating:</label>
+                        <InputSelect id="rating" @bind-Value="review.Rating" class="form-control form-control-lg">
+                            <option value="0" disabled>Select a rating</option>
+                            <option value="1">1 Star</option>
+                            <option value="2">2 Stars</option>
+                            <option value="3">3 Stars</option>
+                            <option value="4">4 Stars</option>
+                            <option value="5">5 Stars</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => review.Rating)" />
+                    </div>
+
+                    <!-- Review Text Area -->
+                    <div class="form-group mb-4">
+                        <label for="reviewText" class="font-weight-bold text-pink">Your Review:</label>
+                        <InputTextArea id="reviewText" @bind-Value="review.ReviewText" class="form-control form-control-lg" placeholder="Write your review here..." rows="4" />
+                        <ValidationMessage For="@(() => review.ReviewText)" />
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="form-group mb-4">
+                        <label for="imageUpload" class="font-weight-bold text-pink">Upload an Image (optional):</label>
+                        <InputFile id="imageUpload" OnChange="HandleFileSelected" class="form-control" />
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-pink btn-lg w-100 mt-3">Submit Review</button>
+                </EditForm>
+            </div>
+        </div>
+
+        <!-- Right Column: Reviews Display Section -->
+        <div class="col-lg-6">
+            <h4 class="text-center text-pink mb-4 font-weight-bold">Recent Reviews</h4>
+            <div class="review-container">
+                @if (reviews.Any())
+                {
+                    @foreach (var reviewItem in reviews)
+                    {
+                        <div class="card mb-4 shadow-sm" style="border-radius: 20px; background-color: #fff0f5;">
+                            <div class="card-body">
+                                <p><strong>Service:</strong> @GetServiceName(reviewItem.ServiceId)</p>
+                                <p><strong>Stylist:</strong> @GetStylistName(reviewItem.StylistId)</p>
+                                <p><strong>Rating:</strong> @reviewItem.Rating Star(s)</p>
+                                <p><strong>Review:</strong> @reviewItem.ReviewText</p>
+
+                                @if (reviewItem.UploadedImage != null)
+                                {
+                                    <div class="text-center mt-3">
+                                        <img src="data:image/png;base64,@Convert.ToBase64String(reviewItem.UploadedImage)" alt="Uploaded Image" class="img-fluid rounded" style="max-height: 200px; object-fit: cover; border-radius: 15px;" />
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-center text-muted">No reviews yet. Be the first to write one!</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Updated Styling */
+    body {
+        background-color: #ffeaf5;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .card {
+        border-radius: 20px;
+    }
+
+    .text-pink {
+        color: #ff66b2;
+    }
+
+    label {
+        color: #e57373;
+        font-weight: 600;
+    }
+
+    .form-control:focus {
+        border-color: #ff66b2;
+        box-shadow: 0px 0px 8px rgba(255, 102, 178, 0.5);
+    }
+
+    .btn-pink {
+        background-color: #ff66b2;
+        border: none;
+        color: #fff;
+        padding: 12px;
+        font-weight: bold;
+        border-radius: 12px;
+        transition: background-color 0.3s, box-shadow 0.3s;
+    }
+
+    .btn-pink:hover {
+        background-color: #ff3385;
+        box-shadow: 0px 5px 10px rgba(255, 102, 178, 0.3);
+    }
+
+    .review-container {
+        max-height: 600px;
+        overflow-y: auto;
+    }
+
+    .review-container .card {
+        margin-bottom: 15px;
+    }
+
+         (max-width: 767px) {
+        .card {
+            margin-bottom: 20px;
+        }
+
+        .btn-pink {
+            font-size: 1rem;
+        }
+    }
+</style>
 
 @code {
+    public class ReviewModel
+    {
+        [Required(ErrorMessage = "Please select a service.")]
+        public int ServiceId { get; set; }
 
+        [Required(ErrorMessage = "Please select a stylist.")]
+        public int StylistId { get; set; }
+
+        [Required(ErrorMessage = "Please select a rating.")]
+        public int Rating { get; set; }
+
+        [Required(ErrorMessage = "Please write a review.")]
+        [StringLength(1000, ErrorMessage = "Review cannot be longer than 1000 characters.")]
+        public string ReviewText { get; set; }
+
+        public byte[] UploadedImage { get; set; } // Store uploaded image
+    }
+
+    private ReviewModel review = new ReviewModel();
+    private List<ReviewModel> reviews = new List<ReviewModel>();
+    private List<Stylist> stylists;
+    private List<Model.Service> services;
+
+    protected override async Task OnInitializedAsync()
+    {
+        services = await ServicesProvider.GetAllServicesAsync();
+        stylists = await StylistProvider.GetStylistsAsync();
+    }
+
+    private void SubmitReview()
+    {
+        reviews.Add(review); // Add review to list
+        review = new ReviewModel(); // Reset the form after submission
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            using (var stream = new MemoryStream())
+            {
+                await file.OpenReadStream().CopyToAsync(stream);
+                review.UploadedImage = stream.ToArray(); // Store the image as a byte array
+            }
+        }
+    }
+
+    private string GetServiceName(int serviceId)
+    {
+        var service = services.FirstOrDefault(s => s.Id == serviceId);
+        return service?.Name ?? "Unknown Service";
+    }
+
+    private string GetStylistName(int stylistId)
+    {
+        var stylist = stylists.FirstOrDefault(s => s.Id == stylistId);
+        return stylist?.Name ?? "Unknown Stylist";
+    }
 }
+
+
+
+

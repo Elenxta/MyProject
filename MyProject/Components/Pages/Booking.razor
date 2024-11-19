@@ -11,133 +11,183 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="container my-5">
-    <div class="card p-4">
-        <h3 class="mb-4">Choose Your Booking Date, Time, and Stylist</h3>
-        <EditForm Model="@this" OnValidSubmit="MakeBooking">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+    <div class="row">
+        <!-- Booking Form -->
+        <div class="col-md-6">
+            <div class="card p-4 shadow">
+                <h3 class="mb-4 text-center">Booking Details</h3>
+                <EditForm Model="@this" OnValidSubmit="MakeBooking">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
 
-            <!-- Date Picker -->
-            <div class="form-group mb-3">
-                <label for="bookingDate">Select a Date:</label>
-                <InputDate id="bookingDate" @bind-Value="BookingDate" class="form-control" />
-                <ValidationMessage For="@(() => BookingDate)" />
-            </div>
+                    <!-- Display the selected service -->
+                    <div class="alert alert-info">
+                        <h4>You have selected: @service.Name</h4>
+                        <p><strong>Price:</strong> @service.Price.ToString("C")</p>
+                        <p><strong>Duration:</strong> @service.Duration</p>
+                        <p><strong>Description:</strong> @service.Description</p>
+                    </div>
 
-            <!-- Time Dropdown -->
-            <div class="form-group mb-3">
-                <label for="bookingTime">Select a Time:</label>
-                <InputSelect id="bookingTime" @bind-Value="BookingTime" class="form-control">
-                    <option value="" disabled>Select a time</option>
-                    <option value="09:00">09:00 AM</option>
-                    <option value="09:30">09:30 AM</option>
-                    <option value="10:00">10:00 AM</option>
-                    <option value="10:30">10:30 AM</option>
-                    <option value="11:00">11:00 AM</option>
-                    <option value="11:30">11:30 AM</option>
-                    <option value="12:00">12:00 PM</option>
-                    <option value="12:30">12:30 PM</option>
-                    <option value="13:00">01:00 PM</option>
-                    <option value="13:30">01:30 PM</option>
-                    <option value="14:00">02:00 PM</option>
-                    <option value="14:30">02:30 PM</option>
-                    <option value="15:00">03:00 PM</option>
-                    <option value="15:30">03:30 PM</option>
-                    <option value="16:00">04:00 PM</option>
-                    <option value="16:30">04:30 PM</option>
-                    <option value="17:00">05:00 PM</option>
-                    <option value="17:30">05:30 PM</option>
-                </InputSelect>
-                <ValidationMessage For="@(() => BookingTime)" />
-            </div>
+                    <!-- Date Picker -->
+                    <div class="form-group mb-3">
+                        <label for="bookingDate">Select a Date:</label>
+                        <InputDate id="bookingDate" @bind-Value="BookingDate" class="form-control" />
+                        <ValidationMessage For="@(() => BookingDate)" />
+                    </div>
 
-            <!-- Stylist Dropdown -->
-            <div class="form-group mb-3">
-                <label for="stylist">Select a Stylist:</label>
-                <InputSelect id="stylist" @bind-Value="SelectedStylistId" class="form-control">
-                    <option value="" disabled>Select a stylist</option>
-                    @foreach (var stylist in stylists)
-                    {
-                        <option value="@stylist.Id">@stylist.Name</option>
-                    }
-                </InputSelect>
-                <ValidationMessage For="@(() => SelectedStylistId)" />
-            </div>
+                    <!-- Time Dropdown -->
+                    <div class="form-group mb-3">
+                        <label for="bookingTime">Select a Time:</label>
+                        <InputSelect id="bookingTime" @bind-Value="BookingTime" class="form-control">
+                            <option value="" disabled>Select a time</option>
+                            <option value="09:00">09:00 AM</option>
+                            <option value="09:30">09:30 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="10:30">10:30 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="11:30">11:30 AM</option>
+                            <option value="12:00">12:00 PM</option>
+                            <option value="12:30">12:30 PM</option>
+                            <option value="13:00">01:00 PM</option>
+                            <option value="13:30">01:30 PM</option>
+                            <option value="14:00">02:00 PM</option>
+                            <option value="14:30">02:30 PM</option>
+                            <option value="15:00">03:00 PM</option>
+                            <option value="15:30">03:30 PM</option>
+                            <option value="16:00">04:00 PM</option>
+                            <option value="16:30">04:30 PM</option>
+                            <option value="17:00">05:00 PM</option>
+                            <option value="17:30">05:30 PM</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => BookingTime)" />
+                    </div>
 
-            <!-- Notes -->
-            <div class="form-group mb-3">
-                <label for="note">Add a Note:</label>
-                <textarea id="note" class="form-control" rows="3" placeholder="Add any additional notes here..."></textarea>
+                    <!-- Stylist Dropdown -->
+                    <div class="form-group mb-3">
+                        <label for="stylist">Select a Stylist:</label>
+                        <InputSelect id="stylist" @bind-Value="SelectedStylistId" class="form-control">
+                            <option value="" disabled>Select a stylist</option>
+                            @foreach (var stylist in stylists)
+                            {
+                                <option value="@stylist.Id">@stylist.Name</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => SelectedStylistId)" />
+                    </div>
+
+                    <!-- Notes Section -->
+                    <div class="form-group mb-3">
+                        <textarea id="notes" class="form-control" rows="4"></textarea>
+                    </div>
+                </EditForm>
             </div>
-           
-            <!-- Book Button -->
-            <button type="submit" class="btn btn-primary mt-3">💖 Pay Online</button>
-        </EditForm>
+        </div>
+
+        <!-- Payment Form -->
+        <div class="col-md-6">
+            <div class="card p-4 shadow">
+                <h3 class="mb-4 text-center">Payment Information</h3>
+                <form>
+                    <!-- Cardholder's Name -->
+                    <div class="form-group mb-3">
+                        <label for="cardName">Cardholder's Name:</label>
+                        <input id="cardName" type="text" class="form-control" placeholder="John Doe" />
+                    </div>
+
+                    <!-- Card Number -->
+                    <div class="form-group mb-3">
+                        <label for="cardNumber">Card Number:</label>
+                        <input id="cardNumber" type="text" class="form-control" placeholder="1234 5678 9012 3456" />
+                    </div>
+
+                    <!-- Expiry Date -->
+                    <div class="form-group mb-3">
+                        <label for="expiryDate">Expiry Date:</label>
+                        <input id="expiryDate" type="text" class="form-control" placeholder="MM/YY" />
+                    </div>
+
+                    <!-- CVV -->
+                    <div class="form-group mb-3">
+                        <label for="cvv">CVV:</label>
+                        <input id="cvv" type="text" class="form-control" placeholder="123" />
+                    </div>
+
+                    <!-- Pay Button -->
+                    <button type="button" class="btn btn-success btn-lg w-100 mt-3" @onclick="MakeBooking">💳 Pay Now</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
- 
-   
-        
+
 <style>
-    /* Pink and Pretty Styles */
+
+    /* Styling for Both Forms */
     body {
-        background-color: #ffe6f2;
-        font-family: Arial, sans-serif;
+        background-color: #ffe6f2; /* Soft pink background */
+        font-family: 'Arial', sans-serif;
     }
 
     .container {
-        max-width: 500px;
+        max-width: 1100px;
     }
 
     .card {
-        background-color: #fff0f5;
-        border: none;
         border-radius: 15px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff0f5; /* Soft pinkish card background */
     }
 
     h3 {
-        color: #d63384;
+        color: #d63384; /* Bold pink */
         font-weight: bold;
     }
 
     label {
-        color: #d63384;
+        color: #d63384; /* Pink labels */
+        font-weight: bold;
     }
 
     .form-control {
-        border-radius: 8px;
-        border: 1px solid #f2a6c7;
+        border-radius: 10px;
+        border: 1px solid #f2a6c7; /* Light pink border */
     }
 
-        .form-control:focus {
-            border-color: #d63384;
-            box-shadow: 0 0 5px rgba(214, 51, 132, 0.5);
-        }
+    .form-control:focus {
+        border-color: #d63384; /* Pink focus border */
+        box-shadow: 0px 0px 6px rgba(214, 51, 132, 0.5); /* Soft pink focus glow */
+    }
 
     .btn-primary {
         background-color: #d63384;
         border-color: #d63384;
         color: #fff;
-        border-radius: 8px;
-        font-weight: bold;
+        border-radius: 10px;
     }
 
-        .btn-primary:hover {
-            background-color: #c52973;
-            border-color: #c52973;
-        }
-
-    /* Custom pink selection color for options */
-    option {
-        background-color: #ffe6f2;
-        color: #d63384;
+    .btn-primary:hover {
+        background-color: #c52973; /* Darker pink for hover */
     }
-    </style>
+
+    .btn-success {w
+        background-color: #ff66b2; /* Bright girly pink */
+        border-color: #ff66b2;
+        color: #fff;
+        border-radius: 10px;
+    }
+
+    .btn-success:hover {
+        background-color: #ff3385; /* Darker pink for hover */
+    }
+
+    .alert-info {
+        background-color: #ffe6f2; /* Light pink background */
+        color: #d63384; /* Pink text */
+    }
+</style>
+
 @code {
 
-    
     public class CreateBooking
     {
         [Required(ErrorMessage = "Please select a date.")]
@@ -156,15 +206,12 @@
     public DateTime BookingDate { get; set; }
     public string BookingTime { get; set; }
     public int SelectedStylistId { get; set; }
-   
-    
+
     private PaymentDetails paymentDetails;
-    private List <Stylist> stylists;
+    private List<Stylist> stylists;
     private Model.Service service;
     private EditContext editContext;
 
-
-        
     protected override async Task OnInitializedAsync()
     {
         // Fetches the details of a specific service based on the provided Id.
@@ -174,10 +221,6 @@
         stylists = await StylistProvider.GetStylistsAsync();
     }
 
-    // Holds the ID or name of the currently selected stylist, allowing tracking of the user's selection.
-    private string selectedStylist { get; set; }
-   
-
     public async void MakeBooking()
     {
         // gets the logged in user
@@ -185,10 +228,11 @@
         var username = authState!.User!.Identity!.Name!;
         var user = UserProvider.GetUserByUsername(username)!;
 
-        //BookingProvider.CreateBooking()
+        // Add logic to save the booking to the database here
+
+        // Redirect to checkout or booking confirmation page after the booking is made.
         NavigationManager.NavigateTo($"/checkout/");
     }
-        
 
     private sealed class PaymentDetails
     {
@@ -205,4 +249,3 @@
         public string SecurityCode { get; set; }
     }
 }
-
