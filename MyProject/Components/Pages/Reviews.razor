@@ -1,11 +1,15 @@
-﻿@page "/Reviews"
-@using MyProject.Context
+﻿@page "/reviews"
+@using Microsoft.AspNetCore.Components.Authorization
 @using MyProject.Model
+@using MyProject.Context
 @using System.ComponentModel.DataAnnotations
-@inject NavigationManager NavigationManager
-@inject StylistProvider StylistProvider
+@using System.Text
+@inject ReviewProvider ReviewProvider
 @inject ServicesProvider ServicesProvider
-
+@inject NavigationManager NavigationManager
+@inject DatabaseContext DatabaseContext
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
 
 <div class="container my-5">
     <div class="row">
@@ -16,6 +20,11 @@
                 <EditForm Model="@review" OnValidSubmit="SubmitReview">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">@errorMessage</div>
+                    }
 
                     <!-- Service Dropdown -->
                     <div class="form-group mb-4">
@@ -28,19 +37,6 @@
                             }
                         </InputSelect>
                         <ValidationMessage For="@(() => review.ServiceId)" />
-                    </div>
-
-                    <!-- Stylist Dropdown -->
-                    <div class="form-group mb-4">
-                        <label for="stylist" class="font-weight-bold text-pink">Select Stylist:</label>
-                        <InputSelect id="stylist" @bind-Value="review.StylistId" class="form-control form-control-lg">
-                            <option value="0" disabled>Select a stylist</option>
-                            @foreach (var stylist in stylists)
-                            {
-                                <option value="@stylist.Id">@stylist.Name</option>
-                            }
-                        </InputSelect>
-                        <ValidationMessage For="@(() => review.StylistId)" />
                     </div>
 
                     <!-- Star Rating Dropdown -->
@@ -87,14 +83,13 @@
                         <div class="card mb-4 shadow-sm" style="border-radius: 20px; background-color: #fff0f5;">
                             <div class="card-body">
                                 <p><strong>Service:</strong> @GetServiceName(reviewItem.ServiceId)</p>
-                                <p><strong>Stylist:</strong> @GetStylistName(reviewItem.StylistId)</p>
                                 <p><strong>Rating:</strong> @reviewItem.Rating Star(s)</p>
                                 <p><strong>Review:</strong> @reviewItem.ReviewText</p>
 
-                                @if (reviewItem.UploadedImage != null)
+                                @if (!string.IsNullOrEmpty(reviewItem.ImageBase64))
                                 {
                                     <div class="text-center mt-3">
-                                        <img src="data:image/png;base64,@Convert.ToBase64String(reviewItem.UploadedImage)" alt="Uploaded Image" class="img-fluid rounded" style="max-height: 200px; object-fit: cover; border-radius: 15px;" />
+                                        <img src="data:image/png;base64,@reviewItem.ImageBase64" alt="Uploaded Image" class="img-fluid rounded" style="max-height: 200px; object-fit: cover; border-radius: 15px;" />
                                     </div>
                                 }
                             </div>
@@ -110,74 +105,11 @@
     </div>
 </div>
 
-<style>
-    /* Updated Styling */
-    body {
-        background-color: #ffeaf5;
-        font-family: 'Arial', sans-serif;
-    }
-
-    .card {
-        border-radius: 20px;
-    }
-
-    .text-pink {
-        color: #ff66b2;
-    }
-
-    label {
-        color: #e57373;
-        font-weight: 600;
-    }
-
-    .form-control:focus {
-        border-color: #ff66b2;
-        box-shadow: 0px 0px 8px rgba(255, 102, 178, 0.5);
-    }
-
-    .btn-pink {
-        background-color: #ff66b2;
-        border: none;
-        color: #fff;
-        padding: 12px;
-        font-weight: bold;
-        border-radius: 12px;
-        transition: background-color 0.3s, box-shadow 0.3s;
-    }
-
-    .btn-pink:hover {
-        background-color: #ff3385;
-        box-shadow: 0px 5px 10px rgba(255, 102, 178, 0.3);
-    }
-
-    .review-container {
-        max-height: 600px;
-        overflow-y: auto;
-    }
-
-    .review-container .card {
-        margin-bottom: 15px;
-    }
-
-         (max-width: 767px) {
-        .card {
-            margin-bottom: 20px;
-        }
-
-        .btn-pink {
-            font-size: 1rem;
-        }
-    }
-</style>
-
 @code {
     public class ReviewModel
     {
         [Required(ErrorMessage = "Please select a service.")]
         public int ServiceId { get; set; }
-
-        [Required(ErrorMessage = "Please select a stylist.")]
-        public int StylistId { get; set; }
 
         [Required(ErrorMessage = "Please select a rating.")]
         public int Rating { get; set; }
@@ -186,24 +118,49 @@
         [StringLength(1000, ErrorMessage = "Review cannot be longer than 1000 characters.")]
         public string ReviewText { get; set; }
 
-        public byte[] UploadedImage { get; set; } // Store uploaded image
+        public string ImageBase64 { get; set; }
     }
 
     private ReviewModel review = new ReviewModel();
     private List<ReviewModel> reviews = new List<ReviewModel>();
-    private List<Stylist> stylists;
     private List<Model.Service> services;
+    private string errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
         services = await ServicesProvider.GetAllServicesAsync();
-        stylists = await StylistProvider.GetStylistsAsync();
+        await LoadReviews();
     }
 
-    private void SubmitReview()
+    private async Task SubmitReview()
     {
-        reviews.Add(review); // Add review to list
-        review = new ReviewModel(); // Reset the form after submission
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity == null || !user.Identity.IsAuthenticated)
+        {
+            errorMessage = "Please log in first.";
+            return;
+        }
+
+        try
+        {
+            // Save review to database
+            await ReviewProvider.CreateReview(
+                userId: int.Parse(user.FindFirst("sub")?.Value ?? "0"), // Get user ID from claims
+                serviceId: review.ServiceId,
+                stars: review.Rating,
+                description: review.ReviewText,
+                imageBase64: review.ImageBase64);
+
+            review = new ReviewModel(); // Reset the form
+            await LoadReviews(); // Reload reviews
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error submitting review: {ex.Message}");
+            errorMessage = "An error occurred while submitting the review. Please try again.";
+        }
     }
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
@@ -214,8 +171,27 @@
             using (var stream = new MemoryStream())
             {
                 await file.OpenReadStream().CopyToAsync(stream);
-                review.UploadedImage = stream.ToArray(); // Store the image as a byte array
+                review.ImageBase64 = Convert.ToBase64String(stream.ToArray());
             }
+        }
+    }
+
+    private async Task LoadReviews()
+    {
+        try
+        {
+            var dbReviews = await ReviewProvider.GetAllReviewsAsync();
+            reviews = dbReviews.Select(r => new ReviewModel
+                {
+                    ServiceId = r.Service.Id,
+                    Rating = r.Stars,
+                    ReviewText = r.Description,
+                    ImageBase64 = r.Images
+                }).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading reviews: {ex.Message}");
         }
     }
 
@@ -224,14 +200,7 @@
         var service = services.FirstOrDefault(s => s.Id == serviceId);
         return service?.Name ?? "Unknown Service";
     }
-
-    private string GetStylistName(int stylistId)
-    {
-        var stylist = stylists.FirstOrDefault(s => s.Id == stylistId);
-        return stylist?.Name ?? "Unknown Stylist";
-    }
 }
-
 
 
 

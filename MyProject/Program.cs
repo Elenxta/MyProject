@@ -18,10 +18,11 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 builder.Services.AddScoped<DatabaseSeeder>();
-builder.Services.AddScoped<ServicesProvider>();
-builder.Services.AddScoped<StylistProvider>();
 builder.Services.AddScoped<BookingProvider>();
 builder.Services.AddScoped<UserProvider>();
+builder.Services.AddScoped<ServicesProvider>();
+builder.Services.AddScoped<StylistProvider>();
+builder.Services.AddScoped<ReviewProvider>();
 
 
 

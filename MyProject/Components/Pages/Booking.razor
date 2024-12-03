@@ -1,11 +1,11 @@
 ﻿@page "/Booking/{id:int}"
 @using Microsoft.AspNetCore.Components.Authorization
 @using MyProject.Context
-@using MyProject.Model 
+@using MyProject.Model
 @using System.ComponentModel.DataAnnotations
 @inject StylistProvider StylistProvider
 @inject ServicesProvider ServicesProvider
-@inject NavigationManager NavigationManager 
+@inject NavigationManager NavigationManager
 @inject BookingProvider BookingProvider
 @inject UserProvider UserProvider
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -14,8 +14,8 @@
     <div class="row">
         <!-- Booking Form -->
         <div class="col-md-6">
-            <div class="card p-4 shadow">
-                <h3 class="mb-4 text-center">Booking Details</h3>
+            <div class="card p-4 shadow" style="background-color: #f8c9d4;">
+                <h3 class="mb-4 text-center text-danger">Booking Details</h3>
                 <EditForm Model="@this" OnValidSubmit="CreateBooking">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
@@ -77,55 +77,52 @@
 
                     <!-- Notes Section -->
                     <div class="form-group mb-3">
-                        <textarea id="notes" class="form-control" rows="4"> </textarea>
+                        <textarea id="notes" class="form-control" rows="4" @bind="Notes"></textarea>
                     </div>
+
+                    <button type="button" class="btn btn-danger btn-lg w-100 mt-3" @onclick="CreateBooking">💳 Pay Now</button>
                 </EditForm>
             </div>
         </div>
 
-        <!-- Payment Form -->
+        <!-- Fake Payment Box -->
         <div class="col-md-6">
-            <div class="card p-4 shadow">
-                <h3 class="mb-4 text-center">Payment Information</h3>
-                <form>
-                    <!-- Cardholder's Name -->
-                    <div class="form-group mb-3">
-                        <label for="cardName">Cardholder's Name:</label>
-                        <input id="cardName" type="text" class="form-control" placeholder="John Doe" />
-                    </div>
+            <div class="card p-4 shadow" style="background-color: #f8c9d4;">
+                <h3 class="mb-4 text-center text-danger">Payment</h3>
+                <div class="alert alert-warning">
+                    <p><strong>Payment Summary:</strong></p>
 
-                    <!-- Card Number -->
-                    <div class="form-group mb-3">
-                        <label for="cardNumber">Card Number:</label>
-                        <input id="cardNumber" type="text" class="form-control" placeholder="1234 5678 9012 3456" />
-                    </div>
+                    <p><strong>Amount:</strong> @service.Price.ToString("C")</p>
+                    <p><strong>Payment Method:</strong> Credit/Debit Card</p>
+                    <p><strong>Status:</strong> Pending</p>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="paymentName">Name of card owner:</label>
+                    <input id="paymentNamer" type="text" class="form-control" placeholder="Sophie " />
+                </div>
+                <div class="form-group mb-3">
+                    <label for="paymentCardNumber">Card Number:</label>
+                    <input id="paymentCardNumber" type="text" class="form-control" placeholder="1234 5678 9012 3456" />
+                </div>
 
-                    <!-- Expiry Date -->
-                    <div class="form-group mb-3">
-                        <label for="expiryDate">Expiry Date:</label>
-                        <input id="expiryDate" type="text" class="form-control" placeholder="MM/YY" />
-                    </div>
+                <div class="form-group mb-3">
+                    <label for="paymentExpiryDate">Expiry Date:</label>
+                    <input id="paymentExpiryDate" type="text" class="form-control" placeholder="MM/YY" />
+                </div>
 
-                    <!-- CVV -->
-                    <div class="form-group mb-3">
-                        <label for="cvv">CVV:</label>
-                        <input id="cvv" type="text" class="form-control" placeholder="123" />
-                    </div>
+                <div class="form-group mb-3">
+                    <label for="paymentCVV">CVV:</label>
+                    <input id="paymentCVV" type="text" class="form-control" placeholder="123" />
+                </div>
 
-                    <!-- Pay Button -->
-                    <button type="button" class="btn btn-success btn-lg w-100 mt-3" @onclick="CreateBooking">💳 Pay Now</button>
-                </form>
             </div>
         </div>
     </div>
 </div>
-
-
 <style>
-
-    /* Styling for Both Forms */
+    /* Styling for the whole page */
     body {
-        background-color: #ffe6f2; /* Soft pink background */
+        background-color: #ffe6f7; /* Light pink background */
         font-family: 'Arial', sans-serif;
     }
 
@@ -138,114 +135,76 @@
         background-color: #fff0f5; /* Soft pinkish card background */
     }
 
-    h3 {
-        color: #d63384; /* Bold pink */
-        font-weight: bold;
-    }
-
-    label {
-        color: #d63384; /* Pink labels */
+    h3, label {
+        color: #f28fb1; /* Light pink text */
         font-weight: bold;
     }
 
     .form-control {
         border-radius: 10px;
-        border: 1px solid #f2a6c7; /* Light pink border */
+        border: 1px solid #f28fb1; /* Light pink border */
     }
 
         .form-control:focus {
-            border-color: #d63384; /* Pink focus border */
-            box-shadow: 0px 0px 6px rgba(214, 51, 132, 0.5); /* Soft pink focus glow */
+            border-color: #f28fb1; /* Pink focus border */
+            box-shadow: 0px 0px 6px rgba(242, 143, 177, 0.5); /* Soft pink focus glow */
         }
 
-    .btn-primary {
-        background-color: #d63384;
-        border-color: #d63384;
-        color: #fff;
-        border-radius: 10px;
-    }
-
-        .btn-primary:hover {
-            background-color: #c52973; /* Darker pink for hover */
-        }
-
-    .btn-success {
-        w background-color: #ff66b2; /* Bright girly pink */
+    .btn-pink {
+        background-color: #ff66b2; /* Bright pink */
         border-color: #ff66b2;
         color: #fff;
         border-radius: 10px;
     }
 
-        .btn-success:hover {
-            background-color: #ff3385; /* Darker pink for hover */
+        .btn-pink:hover {
+            background-color: #ff3385; /* Darker pink on hover */
         }
 
     .alert-info {
-        background-color: #ffe6f2; /* Light pink background */
-        color: #d63384; /* Pink text */
+        background-color: #fce1f2; /* Very light pink background */
+        color: #f28fb1; /* Light pink text */
+    }
+
+    .text-pink {
+        color: #f28fb1; /* Light pink text */
     }
 </style>
-
 @code {
-
-    public class BookingErrors
-    {
-        [Required(ErrorMessage = "Please select a date.")]
-        [DataType(DataType.Date)]
-        public DateTime Date { get; set; }
-
-        [Required(ErrorMessage = "Please select a time.")]
-        public string Time { get; set; }
-
-        [Required(ErrorMessage = "Please select a stylist.")]
-        public int StylistId { get; set; }
-    }
-       
-    [Parameter]
-    public int Id { get; set; }
     public DateTime BookingDate { get; set; }
     public string BookingTime { get; set; }
     public int SelectedStylistId { get; set; }
+    public string Notes { get; set; } = string.Empty;
 
-    private PaymentDetails paymentDetails;
     private List<Stylist> stylists;
     private Model.Service service;
-    private EditContext editContext;
 
     protected override async Task OnInitializedAsync()
     {
-        // Fetches the details of a specific service based on the provided Id.
         service = await ServicesProvider.GetService(Id);
-
-        // Fetches the list of stylists available for selection.
         stylists = await StylistProvider.GetStylistsAsync();
+      
     }
 
-    public async void CreateBooking()
+    public async Task CreateBooking()
     {
-        // gets the logged in user
+
+        // Convert the selected booking time string to TimeSpan
+        var timeParts = BookingTime.Split(':');
+        var bookingTime = new TimeSpan(int.Parse(timeParts[0]), int.Parse(timeParts[1]), 0);
+
+        // Get the logged-in user
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var username = authState!.User!.Identity!.Name!;
-        var user = UserProvider.GetUserByUsername(username)!;
+        var user = UserProvider.GetUserByUsername(username);
 
-        // Add logic to save the booking to the database here
+        // Call the CreateBooking method from the BookingProvider to save the booking
+        await BookingProvider.CreateBooking(user, service.Id, BookingDate, bookingTime, SelectedStylistId, Notes);
 
-        // Redirect to checkout or booking confirmation page after the booking is made.
-        NavigationManager.NavigateTo($"/Thankyou/");
+        
+        NavigationManager.NavigateTo("/Thankyou");
     }
 
-    private sealed class PaymentDetails
-    {
-        [Required]
-        public string NameOnCard { get; set; }
-
-        [Required]
-        public string CardNumber { get; set; }
-
-        [Required]
-        public string ExpiryDate { get; set; }
-
-        [Required]
-        public string SecurityCode { get; set; }
-    }
+    [Parameter]
+    public int Id { get; set; }
 }
