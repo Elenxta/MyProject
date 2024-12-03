@@ -145,33 +145,41 @@
     private bool isError;
 
     public async Task RegisterUser(EditContext editContext)
-
-    
     {
+        // Create a new User object and populate its properties with data from the model.
         var user = new User
             {
                 UserName = Model.Email,
-                Email = Model.Email,
-                FirstName = Model.FirstName,
-                LastName = Model.LastName,
-                PhoneNumber = Model.PhoneNumber
-           };
+                Email = Model.Email,    
+                FirstName = Model.FirstName, 
+                LastName = Model.LastName,   
+                PhoneNumber = Model.PhoneNumber,
+            };
+
+        // Use the UserManager to create a new user with the specified password.
         var result = await UserManager.CreateAsync(user, Model.Password);
 
+        // Check if the user creation failed.
         if (!result.Succeeded)
-        { 
+        {
+           
             identityErrors = result.Errors;
             isError = true;
             return;
         }
 
+        // Log that the user account was successfully created.
         Logger.LogInformation("User created a new account with password.");
 
+        // Retrieve the ID of the newly created user.
         var userId = await UserManager.GetUserIdAsync(user);
 
+        // Sign in the new user (without persisting their session across browser restarts).
         await SignInManager.SignInAsync(user, isPersistent: false);
+
         RedirectManager.RedirectTo(ReturnUrl);
     }
+
 
     private sealed class RegisterModel
     {   [Required (ErrorMessage ="Please enter your email")]
