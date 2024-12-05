@@ -36,10 +36,11 @@
                     </div>
 
                     <!-- Time Dropdown -->
+                    <!-- Time Dropdown -->
                     <div class="form-group mb-3">
                         <label for="bookingTime">Select a Time:</label>
                         <InputSelect id="bookingTime" @bind-Value="BookingTime" class="form-control">
-                            <option value="" disabled>Select a time</option>
+                            <option value="">Select a time</option>
                             <option value="09:00">09:00 AM</option>
                             <option value="09:30">09:30 AM</option>
                             <option value="10:00">10:00 AM</option>
@@ -189,6 +190,7 @@
     public async Task CreateBooking()
     {
 
+                                                                    
         // Convert the selected booking time string to TimeSpan
         var timeParts = BookingTime.Split(':');
         var bookingTime = new TimeSpan(int.Parse(timeParts[0]), int.Parse(timeParts[1]), 0);
@@ -203,6 +205,19 @@
 
         
         NavigationManager.NavigateTo("/Thankyou");
+    }
+  
+    public class BookingModel
+    {
+        [Required(ErrorMessage = "Please select a booking date.")]
+        public DateTime BookingDate { get; set; } = DateTime.MinValue;
+
+        [Required(ErrorMessage = "Please select a time for your appointment.")]
+        public string BookingTime { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Please select a stylist.")]
+        public int SelectedStylistId { get; set; }
+
     }
 
     [Parameter]
