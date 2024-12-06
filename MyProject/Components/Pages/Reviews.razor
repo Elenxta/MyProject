@@ -134,21 +134,10 @@
 
     private async Task SubmitReview()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity == null || !user.Identity.IsAuthenticated)
-        {
-            errorMessage = "Please log in first.";
-            return;
-        }
+        
 
         // Submit the review to the ReviewProvider
-        await ReviewProvider.CreateReviewAsync(
-            review.ServiceId,
-            review.Rating,
-            review.ReviewText,
-            review.ImageBase64);
+        await ReviewProvider.CreateReviewAsync(review.ServiceId, review.Rating,review.ReviewText,review.ImageBase64);
 
         review = new ReviewModel(); // Reset the form
         await LoadReviews(); // Reload reviews after submission

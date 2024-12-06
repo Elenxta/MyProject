@@ -179,7 +179,7 @@
     }
 
     public async Task SubmitBooking()
-     {
+    {
 
         // Convert the selected booking time string to TimeSpan
         var timeParts = booking.BookingTime.Split(':');
@@ -191,7 +191,7 @@
         var user = UserProvider.GetUserByUsername(username);
 
         // Call the CreateBooking method from the BookingProvider to save the booking
-        await BookingProvider.CreateBooking(user, service.Id, booking.BookingDate, bookingTime, booking.SelectedStylistId, booking.Notes);
+        await BookingProvider.CreateBooking(user, service.Id, booking.BookingDate,bookingTime, booking.SelectedStylistId, booking.Notes);
 
         NavigationManager.NavigateTo("/Thankyou");
     }
@@ -210,8 +210,6 @@
         public string Notes { get; set; } = string.Empty;
     }
 }
-
-
 
 
 
