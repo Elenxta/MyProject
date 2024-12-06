@@ -116,7 +116,7 @@
 
         [Required(ErrorMessage = "Please write a review.")]
         [StringLength(1000, ErrorMessage = "Review cannot be longer than 1000 characters.")]
-        public string ReviewText { get; set; }
+        public string ReviewText { get; set; } = string.Empty;
 
         public string ImageBase64 { get; set; }
     }
@@ -143,24 +143,15 @@
             return;
         }
 
-        try
-        {
-            // Save review to database
-            await ReviewProvider.CreateReview(
-                userId: int.Parse(user.FindFirst("sub")?.Value ?? "0"), // Get user ID from claims
-                serviceId: review.ServiceId,
-                stars: review.Rating,
-                description: review.ReviewText,
-                imageBase64: review.ImageBase64);
+        // Submit the review to the ReviewProvider
+        await ReviewProvider.CreateReviewAsync(
+            review.ServiceId,
+            review.Rating,
+            review.ReviewText,
+            review.ImageBase64);
 
-            review = new ReviewModel(); // Reset the form
-            await LoadReviews(); // Reload reviews
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error submitting review: {ex.Message}");
-            errorMessage = "An error occurred while submitting the review. Please try again.";
-        }
+        review = new ReviewModel(); // Reset the form
+        await LoadReviews(); // Reload reviews after submission
     }
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
@@ -178,21 +169,15 @@
 
     private async Task LoadReviews()
     {
-        try
-        {
-            var dbReviews = await ReviewProvider.GetAllReviewsAsync();
-            reviews = dbReviews.Select(r => new ReviewModel
-                {
-                    ServiceId = r.Service.Id,
-                    Rating = r.Stars,
-                    ReviewText = r.Description,
-                    ImageBase64 = r.Images
-                }).ToList();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error loading reviews: {ex.Message}");
-        }
+        // Fetch reviews from the ReviewProvider
+        var dbReviews = await ReviewProvider.GetAllReviewsAsync();
+        reviews = dbReviews.Select(r => new ReviewModel
+            {
+                ServiceId = r.Service.Id,
+                Rating = r.Stars,
+                ReviewText = r.Description,
+                ImageBase64 = r.Images
+            }).ToList();
     }
 
     private string GetServiceName(int serviceId)
@@ -201,6 +186,11 @@
         return service?.Name ?? "Unknown Service";
     }
 }
+
+
+
+    
+
 
 
 

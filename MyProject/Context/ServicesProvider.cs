@@ -17,9 +17,9 @@ namespace MyProject.Context
             return await _context.Services.OrderBy(service => service.Id).ToListAsync();
         }
 
-        public async Task<Service?> GetService(int id)
+        public async Task<Service?> GetService(int Id)
         {
-            return await _context.Services.FindAsync(id);
+            return await _context.Services.FindAsync(Id);
         }
     }
 }

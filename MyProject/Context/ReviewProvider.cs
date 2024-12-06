@@ -18,7 +18,7 @@ namespace MyProject.Context
             return await _context.Reviews.ToListAsync();
         }
 
-        public async Task CreateReview(int userId, int serviceId, int stars, string description, string imageBase64)
+        public async Task CreateReviewAsync(int serviceId, int stars, string description, string imageBase64)
         {
             var service = await _context.Services.FirstOrDefaultAsync(s => s.Id == serviceId);
 
@@ -36,4 +36,6 @@ namespace MyProject.Context
 
     }
 }
+
+
 
