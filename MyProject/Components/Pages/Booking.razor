@@ -179,12 +179,7 @@
     }
 
     public async Task SubmitBooking()
-    {
-        if (string.IsNullOrEmpty(booking.BookingTime) || booking.SelectedStylistId == 0 || booking.BookingDate == default)
-        {
-            // Handle missing data (you can add more specific error handling here if needed)
-            return;
-        }
+     {
 
         // Convert the selected booking time string to TimeSpan
         var timeParts = booking.BookingTime.Split(':');
