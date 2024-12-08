@@ -20,7 +20,7 @@
                     <DataAnnotationsValidator />
                     <ValidationSummary />
 
-                    <!-- Display the selected service -->
+                    <!-- Display Selected Service -->
                     <div class="alert alert-info">
                         <h4>You have selected: @service.Name</h4>
                         <p><strong>Price:</strong> @service.Price.ToString("C")</p>
@@ -31,21 +31,21 @@
                     <!-- Date Picker -->
                     <div class="form-group mb-3">
                         <label for="bookingDate">Select a Date:</label>
-                        <InputDate id="bookingDate" @bind-Value="booking.BookingDate" class="form-control" />
-                        <ValidationMessage For="@(() => booking.BookingDate)" />
+                        <InputDate id="bookingDate" @bind-Value="booking.Date" class="form-control" />
+                        <ValidationMessage For="@(() => booking.Date)" />
                     </div>
 
-                    <!-- Time Dropdown -->
+                    <!-- Time Picker -->
                     <div class="form-group mb-3">
                         <label for="bookingTime">Select a Time:</label>
-                        <InputSelect id="bookingTime" @bind-Value="booking.BookingTime" class="form-control">
+                        <InputSelect id="bookingTime" @bind-Value="booking.Time" class="form-control">
                             <option value="">Select a time</option>
                             @foreach (var time in AvailableTimes)
                             {
                                 <option value="@time">@time</option>
                             }
                         </InputSelect>
-                        <ValidationMessage For="@(() => booking.BookingTime)" />
+                        <ValidationMessage For="@(() => booking.Time)" />
                     </div>
 
                     <!-- Stylist Dropdown -->
@@ -63,9 +63,11 @@
 
                     <!-- Notes Section -->
                     <div class="form-group mb-3">
-                        <textarea id="notes" class="form-control" rows="4" @bind="booking.Notes"></textarea>
+                        <label for="notes">Additional Notes:</label>
+                        <textarea id="notes" class="form-control" rows="4" @bind="booking.Notes" placeholder="Enter any special requests or comments"></textarea>
                     </div>
 
+                    <!-- Submit Button -->
                     <button type="submit" class="btn btn-danger btn-lg w-100 mt-3">💳 Pay Now</button>
                 </EditForm>
             </div>
@@ -82,8 +84,9 @@
                     <p><strong>Status:</strong> Pending</p>
                 </div>
 
+                <!-- Payment Form -->
                 <div class="form-group mb-3">
-                    <label for="paymentName">Name of Card Owner:</label>
+                    <label for="paymentName">Name on Card:</label>
                     <input id="paymentName" type="text" class="form-control" placeholder="Sophie" />
                 </div>
                 <div class="form-group mb-3">
@@ -157,52 +160,43 @@
 
 @code {
     [Parameter] public int Id { get; set; }
-    public DateTime BookingDate { get; set; }
-    public string BookingTime { get; set; } = string.Empty;
-    public int SelectedStylistId { get; set; }
-    public string Notes { get; set; } = string.Empty;
-
-    private List<Stylist> stylists;
-    private Model.Service service;
-    private List<string> AvailableTimes = new List<string>
+    private List<Stylist> stylists = new();
+    private Model.Service service = new();
+    private List<string> AvailableTimes = new()
     {
         "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
         "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"
     };
 
-    private BookingModel booking = new BookingModel();
+    private BookingModel booking = new();
 
     protected override async Task OnInitializedAsync()
     {
+        // Fetch service and stylists
         service = await ServicesProvider.GetService(Id);
         stylists = await StylistProvider.GetStylistsAsync();
     }
 
-    public async Task SubmitBooking()
+    private async Task SubmitBooking()
     {
-
-        // Convert the selected booking time string to TimeSpan
-        var timeParts = booking.BookingTime.Split(':');
-        var bookingTime = new TimeSpan(int.Parse(timeParts[0]), int.Parse(timeParts[1]), 0);
-
-        // Get the logged-in user
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var username = authState!.User!.Identity!.Name!;
-        var user = UserProvider.GetUserByUsername(username);
+        var username = authState.User?.Identity?.Name;
 
-        // Call the CreateBooking method from the BookingProvider to save the booking
-        await BookingProvider.CreateBooking(user, service.Id, booking.BookingDate,bookingTime, booking.SelectedStylistId, booking.Notes);
-
-        NavigationManager.NavigateTo("/Thankyou");
+        if (!string.IsNullOrEmpty(username))
+        {
+            var user = UserProvider.GetUserByUsernameAsync(username);
+            await BookingProvider.CreateBooking(user, service.Id, booking.Date, booking.Time, booking.SelectedStylistId, booking.Notes);
+            NavigationManager.NavigateTo("/Thankyou");
+        }
     }
 
     private class BookingModel
     {
         [Required(ErrorMessage = "Booking date is required.")]
-        public DateTime BookingDate { get; set; }
+        public DateTime Date { get; set; }
 
         [Required(ErrorMessage = "Booking time is required.")]
-        public string BookingTime { get; set; } = "";
+        public string Time { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Stylist is required.")]
         public int SelectedStylistId { get; set; }

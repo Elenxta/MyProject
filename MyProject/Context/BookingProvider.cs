@@ -13,7 +13,7 @@ namespace MyProject.Context
         }
 
       
-         public async Task CreateBooking(User user, int serviceId, DateTime date, TimeSpan time, int stylistId, string notes)
+         public async Task CreateBooking(User user, int serviceId, DateTime date, string time, int stylistId, string notes)
         {
             // Fetch the stylist from the database based on the provided stylistId
             var stylist = await _context.Stylists.FirstOrDefaultAsync(s => s.Id == stylistId);
@@ -21,22 +21,32 @@ namespace MyProject.Context
             // Fetch the service from the database based on the provided serviceId
             var service = await _context.Services.FirstOrDefaultAsync(s => s.Id == serviceId);
 
-            // Create a new booking object and set its properties
-            var booking = new Booking
-            {
-                User = user,
-                Service = service,
-                Notes = notes,
-                Date = date,
-                Time = time,
-                Stylist = stylist,
-            };
+            
+           var booking = new Booking
+           {
+               User = user,
+               Service = service,
+               Notes = notes,
+               Date = date,
+               Time = time,
+               Stylist = stylist,
+           };
 
-            // Add the new booking to the database context
+           
             _context.Bookings.Add(booking);
-
-            // Save the changes to the database
             await _context.SaveChangesAsync();
+        }
+        public async Task<List<Booking>?> GetBookingsAsync(User? user)
+        {
+
+            // Return all orders for the specified user
+            return await _context.Bookings
+                .Where(booking => booking.User.UserName == user.UserName)
+                .Include(booking => booking.Service)         // Include related service details
+                .Include(booking => booking.Stylist)         // Include related stylist details
+                .OrderBy(booking => booking.Date)            // Order by date
+                .ThenBy(booking => booking.Time)             // Order by time
+                .ToListAsync(); ;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace MyProject.Context
             _context = context;
         }
 
-        public User? GetUserByUsername(string? username)
+        public User? GetUserByUsernameAsync(string? username)
         {
             // Return the user with the specified username
             return _context.Users.FirstOrDefault(user => user.UserName == username);

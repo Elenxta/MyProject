@@ -11,8 +11,8 @@ using MyProject.Context;
 namespace MyProject.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241018134534_initialcreate")]
-    partial class initialcreate
+    [Migration("20241208110423_NewMigration")]
+    partial class NewMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -167,7 +167,8 @@ namespace MyProject.Migrations
                     b.Property<int>("StylistId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<TimeSpan>("Time")
+                    b.Property<string>("Time")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")

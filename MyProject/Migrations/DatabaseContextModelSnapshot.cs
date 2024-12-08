@@ -164,7 +164,8 @@ namespace MyProject.Migrations
                     b.Property<int>("StylistId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<TimeSpan>("Time")
+                    b.Property<string>("Time")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")

@@ -1,17 +1,79 @@
 ﻿@page "/Account"
+@using Microsoft.AspNetCore.Components.Authorization
 @using MyProject.Context
 @using MyProject.Model
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserProvider UserProvider
+@inject BookingProvider BookingProvider
+@* @if (string.IsNullOrEmpty(FirstName) && string.IsNullOrEmpty(LastName))
+{
+    <h3>Please sign in to view your account</h3>
+}
+else
+{
+    <h3>Welcome back, @FirstName @LastName!</h3>
+}
 
- 
-<h1class ="card-title"> welcome back  </h1class>
+<h3 class="text-center mb-4" style="color: #d63384; font-weight: bold;">My Bookings</h3>
 
+<div class="container my-5">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @if (bookings != null && bookings.Any())
+        {
+            @foreach (var bookingItem in bookings)
+            {
+                <div class="col">
+                    <div class="card h-100 background shadow-sm">
+                        <div class="card-body d-flex flex-column">
+                            <!-- Booking Service Title and Stylist -->
+                            <div class="d-flex justify-content-between mb-3">
+                                <h5 class="card-title">@bookingItem.Service.Name</h5>
+                                <h5>@bookingItem.Stylist.Name</h5>
+                            </div>
+
+                            <!-- Booking Date and Time -->
+                            <p><strong>Booking Date:</strong> @bookingItem.Date.ToString("MM/dd/yyyy")</p>
+                            <p><strong>Booking Time:</strong> @bookingItem.Time.ToString(@"hh\:mm")</p>
+
+                            <!-- Notes -->
+                            <p><strong>Notes:</strong> @bookingItem.Notes</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center text-muted">No bookings found. Start by booking a service!</p>
+        }
+    </div>
+</div>
 
 @code {
+    private IEnumerable<Booking> bookings; // Holds bookings specific to the logged-in user
+    private string FirstName { get; set; }
+    private string LastName { get; set; }
+
+    // This method initializes the component and fetches user data and bookings
     protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var username = authState.User?.Identity?.Name;
+
+        if (!string.IsNullOrEmpty(username))
         {
-        // var context = HttpContextAccessor.HttpContext;
+            // Retrieve user details
+            var user = UserProvider.GetUserByUsernameAsync(username);
 
+            if (user != null)
+            {
+                FirstName = user.FirstName;
+                LastName = user.LastName;
+
+                // Fetch bookings for the logged-in user
+                bookings = await BookingProvider.GetBookingsAsync(user.);
+            }
+        }
     }
-    
-
 }
+ *@
