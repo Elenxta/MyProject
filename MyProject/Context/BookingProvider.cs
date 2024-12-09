@@ -36,14 +36,14 @@ namespace MyProject.Context
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
         }
-        public async Task<List<Booking>?> GetBookingsAsync(User? user)
+        public async Task<List<Booking>?> GetUsersBookingsAsync(User? user)
         {
 
             // Return all orders for the specified user
             return await _context.Bookings
                 .Where(booking => booking.User.UserName == user.UserName)
-                .Include(booking => booking.Service)         // Include related service details
-                .Include(booking => booking.Stylist)         // Include related stylist details
+                 .Include(b => b.Stylist) // Include Stylist data
+                 .Include(b => b.Service) // Include Service data
                 .OrderBy(booking => booking.Date)            // Order by date
                 .ThenBy(booking => booking.Time)             // Order by time
                 .ToListAsync(); ;
