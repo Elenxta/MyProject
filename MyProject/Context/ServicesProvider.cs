@@ -16,7 +16,11 @@ namespace MyProject.Context
         {
             return await _context.Services.OrderBy(service => service.Id).ToListAsync();
         }
-
+        public async Task AddService(Service service)
+        {
+            _context.Services.Add(service);
+            await _context.SaveChangesAsync();
+        }
         public async Task<Service?> GetService(int Id)
         {
             return await _context.Services.FindAsync(Id);

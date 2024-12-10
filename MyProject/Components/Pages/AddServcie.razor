@@ -1,0 +1,161 @@
+﻿@page "/Add Service"
+@using Microsoft.AspNetCore.Components.Authorization
+@using MyProject.Context
+@using MyProject.Model
+@using Microsoft.EntityFrameworkCore
+@using System.ComponentModel.DataAnnotations
+@inject ServicesProvider ServicesProvider 
+@inject NavigationManager NavigationManager
+
+
+<EditForm Model="@Model" OnValidSubmit="@HandleSubmit">
+    <DataAnnotationsValidator />
+    <div class="container p-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-12">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body bg-pink-light">
+                        <h3 class="card-title text-center mb-4 text-pink">💖 Add a new service 💖</h3>
+                        
+                        <div class="form-group mb-4">
+                            <label for="name" class="form-label text-pink">Service Name</label>
+                            <InputText id="name" class="form-control border-pink" @bind-Value="@Model.Name" placeholder="Enter service name" />
+                            <ValidationMessage For="@(() => Model.Name)" class="text-danger small" />
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="description" class="form-label text-pink">Description</label>
+                            <InputTextArea id="description" class="form-control border-pink" @bind-Value="@Model.Description" rows="4" placeholder="Enter service description" />
+                            <ValidationMessage For="@(() => Model.Description)" class="text-danger small" />
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="price" class="form-label text-pink">Price</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-pink text-white">£</span>
+                                <InputNumber id="price" class="form-control border-pink" @bind-Value="@Model.Price" placeholder="Enter price (e.g., 9.99)" min="0.01" max="10000.00" step="0.01" />
+                            </div>
+                            <ValidationMessage For="@(() => Model.Price)" class="text-danger small" />
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="duration" class="form-label text-pink">Duration</label>
+                            <InputText id="duration" class="form-control border-pink" @bind-Value="@FormattedDuration" />
+                            <ValidationMessage For="@(() => Model.Duration)" class="text-danger small" />
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-pink btn-lg">
+                                @(Service == null ? "Add Service" : "Update Service")
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+<style>
+    .bg-pink-light {
+        background-color: #f8d3e3; /* Light pink background */
+    }
+
+    .text-pink {
+        color: #d97baf; /* Pink text */
+    }
+
+    .border-pink {
+        border: 2px solid #d97baf; /* Pink border */
+    }
+
+    .btn-pink {
+        background-color: #d97baf; /* Pink button */
+        color: white;
+    }
+
+        .btn-pink:hover {
+            background-color: #eeb4d8; /* Lighter pink on hover */
+        }
+
+    .input-group-text.bg-pink {
+        background-color: #d97baf;
+        color: white;
+    }
+
+    .card-body {
+        padding: 30px;
+        border-radius: 15px;
+    }
+</style>
+@code {
+    [Parameter]
+    public Service? Service { get; set; }
+
+    private ServiceModel Model { get; set; }
+
+    // This property handles the string input from the user and binds to TimeSpan
+    private string FormattedDuration
+    {
+        get => Model.Duration.ToString(@"hh\:mm");
+        set
+        {
+            if (TimeSpan.TryParseExact(value, @"hh\:mm", null, out var parsedDuration))
+            {
+                Model.Duration = parsedDuration;
+            }
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        Model = Service is null ? new ServiceModel() : new ServiceModel(Service);
+        base.OnParametersSet();
+    }
+
+    private async Task HandleSubmit()
+    {
+        var service = Service ?? new Service();
+
+        service.Name = Model.Name;
+        service.Description = Model.Description;
+        service.Price = Model.Price;
+        service.Duration = Model.Duration;
+
+        if (service.Id == 0)
+        {
+            // Add new service
+            await ServicesProvider.AddService(service);
+            Model = new ServiceModel(); 
+        }
+       
+
+        NavigationManager.NavigateTo("/");
+    }
+
+    private sealed class ServiceModel
+    {
+        [Required(ErrorMessage = "Please enter the name of the service.")]
+        public string Name { get; set; } = "";
+
+        [Required(ErrorMessage = "Please enter the description of the service.")]
+        public string Description { get; set; } = "";
+
+        [Required(ErrorMessage = "Please enter the price of the service.")]
+        public decimal Price { get; set; }
+
+        [Required(ErrorMessage = "Please specify the duration of the service.")]
+        public TimeSpan Duration { get; set; }
+
+        public ServiceModel() { }
+
+        public ServiceModel(Service service)
+        {
+            Name = service.Name;
+            Description = service.Description;
+            Price = service.Price;
+            Duration = service.Duration;
+        }
+    }
+}
+
+
