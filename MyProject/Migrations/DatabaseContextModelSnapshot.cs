@@ -193,7 +193,6 @@ namespace MyProject.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Images")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ServiceId")

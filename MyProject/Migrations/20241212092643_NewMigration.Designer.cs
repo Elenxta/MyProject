@@ -11,7 +11,7 @@ using MyProject.Context;
 namespace MyProject.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241208110423_NewMigration")]
+    [Migration("20241212092643_NewMigration")]
     partial class NewMigration
     {
         /// <inheritdoc />
@@ -196,7 +196,6 @@ namespace MyProject.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Images")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ServiceId")

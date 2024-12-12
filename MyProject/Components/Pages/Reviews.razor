@@ -134,7 +134,7 @@
 
     private async Task SubmitReview()
     {
-        
+        var image = string.IsNullOrEmpty(review.ImageBase64) ? null : review.ImageBase64;
 
         // Submit the review to the ReviewProvider
         await ReviewProvider.CreateReviewAsync(review.ServiceId, review.Rating,review.ReviewText,review.ImageBase64);

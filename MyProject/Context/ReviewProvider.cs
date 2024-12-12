@@ -17,23 +17,25 @@ namespace MyProject.Context
         {
             return await _context.Reviews.ToListAsync();
         }
-
         public async Task CreateReviewAsync(int serviceId, int stars, string description, string imageBase64)
         {
+            // Retrieve the service based on the provided ID
             var service = await _context.Services.FirstOrDefaultAsync(s => s.Id == serviceId);
 
+            // Create a new Review object
             var review = new Review
             {
                 Service = service,
                 Stars = stars,
                 Description = description,
-                Images = imageBase64
+                Images = string.IsNullOrEmpty(imageBase64) ? null : imageBase64 // Handle null or empty image
             };
 
-            _context.Reviews.Add(review); // Add the review to the DbContext
-            await _context.SaveChangesAsync(); // Save the changes to the database
-        }
+            // Add the review to the DbContext and save changes
+            _context.Reviews.Add(review);
+            await _context.SaveChangesAsync();
 
+        }
     }
 }
 

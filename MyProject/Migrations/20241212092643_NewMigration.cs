@@ -196,7 +196,7 @@ namespace MyProject.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Stars = table.Column<int>(type: "INTEGER", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: false),
-                    Images = table.Column<string>(type: "TEXT", nullable: false),
+                    Images = table.Column<string>(type: "TEXT", nullable: true),
                     ServiceId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
