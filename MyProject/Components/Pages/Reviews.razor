@@ -143,24 +143,31 @@
         await LoadReviews(); // Reload reviews after submission
     }
 
-    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+  private async Task HandleFileSelected(InputFileChangeEventArgs e)
+{
+    // Get the selected file from the input event args.
+    var file = e.File;
+
+    // Check if the file is not null (i.e., a file was selected).
+    if (file != null)
     {
-        var file = e.File;
-        if (file != null)
+        // Use a MemoryStream to hold the file content in memory.
+        using (var stream = new MemoryStream())
         {
-            using (var stream = new MemoryStream())
-            {
-                await file.OpenReadStream().CopyToAsync(stream);
-                review.ImageBase64 = Convert.ToBase64String(stream.ToArray());
-            }
+            // Asynchronously open the file stream and copy its contents to the MemoryStream.
+            await file.OpenReadStream().CopyToAsync(stream);
+
+            // Convert the MemoryStream byte array into a Base64 string and assign it to the review object.
+            review.ImageBase64 = Convert.ToBase64String(stream.ToArray());
         }
     }
+}
 
     private async Task LoadReviews()
     {
         // Fetch reviews from the ReviewProvider
-        var dbReviews = await ReviewProvider.GetAllReviewsAsync();
-        reviews = dbReviews.Select(r => new ReviewModel
+        var ShowReviews = await ReviewProvider.GetAllReviewsAsync();
+        reviews = ShowReviews.Select(r => new ReviewModel
             {
                 ServiceId = r.Service.Id,
                 Rating = r.Stars,

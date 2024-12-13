@@ -1,0 +1,56 @@
+﻿@page "/all-bookings"
+@using MyProject.Context
+@using MyProject.Model
+@inject BookingProvider BookingProvider
+@inject UserProvider UserProvider
+
+
+<div class="container my-5">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @if (bookings != null && bookings.Any())
+        {
+            @foreach (var bookingItem in bookings)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm" style="border-radius: 15px; background: linear-gradient(to bottom right, #ffdee9, #b5fffc);">
+                        <div class="card-body d-flex flex-column" style="color: #8a2be2; font-family: 'Poppins', sans-serif;">
+                            <!-- User Name -->
+                            <p><strong>User:</strong> <span style="color: #ff69b4;">@($"{bookingItem.User?.FirstName} {bookingItem.User?.LastName}")</span></p>
+
+
+                            <!-- Service and Stylist -->
+                            <p><strong>Service:</strong> <span style="color: #ff69b4;">@bookingItem.Service?.Name</span></p>
+                            <p><strong>Stylist:</strong> <span style="color: #ff69b4;">@bookingItem.Stylist?.Name</span></p>
+
+                            <!-- Booking Date and Time -->
+                            <p><strong>Booking Date:</strong> <span style="color: #ff6f91;">@bookingItem.Date.ToString("MM/dd/yyyy")</span></p>
+                            <p><strong>Booking Time:</strong> <span style="color: #ff6f91;">@bookingItem.Time</span></p>
+
+                            <!-- Notes -->
+                            <p><strong>Notes:</strong> <span style="color: #ff6f91;">@bookingItem.Notes</span></p>
+
+                           
+                       
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center text-muted" style="font-family: 'Poppins', sans-serif; color: #ff69b4;">No bookings found. Start by booking a service!</p>
+        }
+    </div>
+</div>
+
+@code {
+    private string phonenumber;
+    private List<Model.Booking> bookings = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load bookings from a service or database
+        bookings = await BookingProvider.GetAllBookingsAsync();
+      
+    } 
+}

@@ -13,8 +13,6 @@ namespace MyProject.Model
 
         [Required]
         public string PhoneNumber { get; set; }
-        
-        public string? Notes { get; set; }
 
         public List<Booking> Bookings { get; set; }  
        

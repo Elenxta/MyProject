@@ -11,7 +11,7 @@ using MyProject.Context;
 namespace MyProject.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241212092643_NewMigration")]
+    [Migration("20241213135820_NewMigration")]
     partial class NewMigration
     {
         /// <inheritdoc />
@@ -290,9 +290,6 @@ namespace MyProject.Migrations
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Notes")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")

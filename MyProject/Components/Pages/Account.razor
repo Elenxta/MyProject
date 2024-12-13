@@ -11,12 +11,6 @@
         <h3 style="color: #ff6f91; font-family: 'Dancing Script', cursive;">Please log in to view your bookings</h3>
     </div>
 }
-else if (string.IsNullOrEmpty(FirstName) && string.IsNullOrEmpty(LastName))
-{
-    <div class="text-center mt-5">
-        <h3 style="color: #ff6f91; font-family: 'Dancing Script', cursive;">Welcome! Please complete your profile to view your account.</h3>
-    </div>
-}
 else
 {
     <div class="text-center mt-5">
@@ -44,6 +38,9 @@ else
 
                                 <!-- Notes -->
                                 <p><strong>Notes:</strong> <span style="color: #ff6f91;">@bookingItem.Notes</span></p>
+
+                                <!-- Cancel Button -->
+                                <button @onclick="() => CancelBooking(bookingItem)" class="btn btn-danger w-100 mt-auto" style="border-radius: 10px; font-family: 'Poppins', sans-serif;">Cancel Booking</button>
                             </div>
                         </div>
                     </div>
@@ -58,10 +55,22 @@ else
 }
 
 @code {
-    private IEnumerable<Model.Booking> bookings;
+    private List<Model.Booking> bookings;
     private string FirstName { get; set; }
     private string LastName { get; set; }
     private bool isLoggedIn { get; set; }
+
+    private async Task CancelBooking(Model.Booking bookingItem)
+    {
+        // Remove the booking from the database
+        await BookingProvider.CancelBooking(bookingItem);
+
+        // Remove the booking from the local bookings list to reflect on the page
+        bookings.Remove(bookingItem);
+
+        // Trigger the UI to refresh after removing the booking
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,7 +82,7 @@ else
             var username = authState.User?.Identity?.Name;
 
             // Retrieve user details
-            var user = UserProvider.GetUserByUsernameAsync(username);
+            var user =  UserProvider.GetUserByUsernameAsync(username);
 
             // Fetch bookings, including related entities
             bookings = await BookingProvider.GetUsersBookingsAsync(user);
