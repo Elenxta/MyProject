@@ -19,7 +19,7 @@ namespace MyProject.Context
 
         public async Task Seed()
         {
-            await _context.Database.MigrateAsync();
+             await _context.Database.MigrateAsync();
 
             if (!_context.Services.Any())
             {

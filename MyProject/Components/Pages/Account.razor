@@ -5,6 +5,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserProvider UserProvider
 @inject BookingProvider BookingProvider
+@inject NavigationManager NavigationManager 
 @if (!isLoggedIn)
 {
     <div class="text-center mt-5">
@@ -20,10 +21,10 @@ else
     <h3 class="text-center mb-4" style="color: #d63384; font-weight: bold; font-family: 'Poppins', sans-serif;">My Bookings</h3>
 
     <div class="container my-5">
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            @if (bookings != null && bookings.Any())
-            {
-                @foreach (var bookingItem in bookings)
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        
+        <!-- Check if there are any active bookings (not cancelled or with empty notes) -->
+            @foreach (var bookingItem in bookings.Where(b => string.IsNullOrEmpty(b.Notes) || !b.Notes.Contains("CANCELLED")))
                 {
                     <div class="col">
                         <div class="card h-100 shadow-sm" style="border-radius: 15px; background: linear-gradient(to bottom right, #ffdee9, #b5fffc);">
@@ -44,16 +45,39 @@ else
                             </div>
                         </div>
                     </div>
+             }
+            
+        </div>
+    </div>
+
+    <!-- Cancelled Bookings Section -->
+    <h3 class="text-center mb-4" style="color: #d63384; font-family: 'Poppins', sans-serif;">Cancelled Bookings</h3>
+    <div class="container my-5">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @if (bookings != null && bookings.Any(b => b.Notes != null && b.Notes.Contains("CANCELLED")))
+            {
+                @foreach (var bookingItem in bookings.Where(b => b.Notes != null && b.Notes.Contains("CANCELLED")))
+                {
+                    <div class="col">
+                        <div class="card h-100 shadow-sm" style="border-radius: 15px; background-color: #ffe6e6;">
+                            <div class="card-body d-flex flex-column" style="color: #b30000;">
+                                <p><strong>Service:</strong> <span>@bookingItem.Service?.Name</span></p>
+                                <p><strong>Stylist:</strong> <span>@bookingItem.Stylist?.Name</span></p>
+                                <p><strong>Date:</strong> <span>@bookingItem.Date.ToString("MM/dd/yyyy")</span></p>
+                                <p><strong>Time:</strong> <span>@bookingItem.Time</span></p>
+                                <p><em>Cancelled</em></p>
+                            </div>
+                        </div>
+                    </div>
                 }
             }
             else
             {
-                <p class="text-center text-muted" style="font-family: 'Poppins', sans-serif; color: #ff69b4;">No bookings found. Start by booking a service!</p>
+                <p class="text-center text-muted">No cancelled bookings found.</p>
             }
         </div>
     </div>
 }
-
 @code {
     private List<Model.Booking> bookings;
     private string FirstName { get; set; }
@@ -62,16 +86,16 @@ else
 
     private async Task CancelBooking(Model.Booking bookingItem)
     {
-        // Remove the booking from the database
-        await BookingProvider.CancelBooking(bookingItem);
+        // Mark the booking as cancelled in the Notes
+        bookingItem.Notes = string.IsNullOrEmpty(bookingItem.Notes)
+            ? "CANCELLED"
+            : bookingItem.Notes + " | CANCELLED";
 
-        // Remove the booking from the local bookings list to reflect on the page
-        bookings.Remove(bookingItem);
-
-        // Trigger the UI to refresh after removing the booking
-        StateHasChanged();
+        await BookingProvider.UpdateBookingAsync(bookingItem); // Save changes to the database
+       
     }
 
+  
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();

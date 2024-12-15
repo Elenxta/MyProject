@@ -4,19 +4,18 @@
 @inject BookingProvider BookingProvider
 @inject UserProvider UserProvider
 
-
+<h3 class="text-center mb-4" style="color: #d63384; font-family: 'Poppins', sans-serif;">All bookings</h3>
 <div class="container my-5">
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        @if (bookings != null && bookings.Any())
+        @if (bookings != null && bookings.Any(b => string.IsNullOrEmpty(b.Notes) || !b.Notes.Contains("CANCELLED")))
         {
-            @foreach (var bookingItem in bookings)
+            @foreach (var bookingItem in bookings.Where(b => string.IsNullOrEmpty(b.Notes) || !b.Notes.Contains("CANCELLED")))
             {
                 <div class="col">
                     <div class="card h-100 shadow-sm" style="border-radius: 15px; background: linear-gradient(to bottom right, #ffdee9, #b5fffc);">
                         <div class="card-body d-flex flex-column" style="color: #8a2be2; font-family: 'Poppins', sans-serif;">
                             <!-- User Name -->
                             <p><strong>User:</strong> <span style="color: #ff69b4;">@($"{bookingItem.User?.FirstName} {bookingItem.User?.LastName}")</span></p>
-
 
                             <!-- Service and Stylist -->
                             <p><strong>Service:</strong> <span style="color: #ff69b4;">@bookingItem.Service?.Name</span></p>
@@ -29,8 +28,8 @@
                             <!-- Notes -->
                             <p><strong>Notes:</strong> <span style="color: #ff6f91;">@bookingItem.Notes</span></p>
 
-                           
-                       
+                            <!-- View User Details Button -->
+                            <button class="btn btn-primary mt-3" @onclick="() => ShowUserDetails(bookingItem.User)">View User Details</button>
                         </div>
                     </div>
                 </div>
@@ -38,19 +37,97 @@
         }
         else
         {
-            <p class="text-center text-muted" style="font-family: 'Poppins', sans-serif; color: #ff69b4;">No bookings found. Start by booking a service!</p>
+            <p class="text-center text-muted" style="font-family: 'Poppins', sans-serif; color: #ff69b4;">No active bookings found.</p>
         }
     </div>
 </div>
 
+<!-- Cancelled Bookings -->
+<h3 class="text-center mb-4" style="color: #d63384; font-family: 'Poppins', sans-serif;">Cancelled Bookings</h3>
+<div class="container my-5">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @if (bookings != null && bookings.Any(b => b.Notes != null && b.Notes.Contains("CANCELLED")))
+        {
+            @foreach (var bookingItem in bookings.Where(b => b.Notes != null && b.Notes.Contains("CANCELLED")))
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm" style="border-radius: 15px; background-color: #ffe6e6;">
+                        <div class="card-body d-flex flex-column" style="color: #b30000;">
+                            <p><strong>User:</strong> <span style="color: #ff69b4;">@($"{bookingItem.User?.FirstName} {bookingItem.User?.LastName}")</span></p>
+                            <p><strong>Service:</strong> <span>@bookingItem.Service?.Name</span></p>
+                            <p><strong>Date:</strong> <span>@bookingItem.Date.ToString("MM/dd/yyyy")</span></p>
+                            <p><strong>Time:</strong> <span>@bookingItem.Time</span></p>
+                            <p><em>Cancelled</em></p>
+
+                            <!-- View User Details Button for cancelled bookings -->
+                            <button class="btn btn-danger mt-3" @onclick="() => ShowUserDetails(bookingItem.User)">View User Details</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center text-muted">No cancelled bookings found.</p>
+        }
+    </div>
+</div>
+
+<!-- User Details Modal -->
+@if (ShowModal && SelectedUser != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">User Details</h5>
+    
+                </div>
+                <div class="modal-body">
+                    <p><strong>Email:</strong> @SelectedUser.Email</p>
+                    <p><strong>Phone:</strong> @SelectedUser.PhoneNumber</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
 @code {
-    private string phonenumber;
     private List<Model.Booking> bookings = new();
+    private Model.User? SelectedUser { get; set; }
+    private bool ShowModal { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
         // Load bookings from a service or database
         bookings = await BookingProvider.GetAllBookingsAsync();
-      
-    } 
+    }
+
+    // Method to show user details in the modal
+    private void ShowUserDetails(Model.User? user)
+    {
+        // Set the SelectedUser to the passed user
+        SelectedUser = user;
+
+        // Set ShowModal to true to display the modal
+        ShowModal = true;
+    }
+
+    private void CloseModal()
+    {
+        ShowModal = false;  // Hide the modal
+        SelectedUser = null; // Optional: Clear the selected user details
+    }
+
+    // This should be the User model class
+    public class User
+    {
+        public string Email { get; set; } = "";
+        public string PhoneNumber { get; set; } = "";
+    }
 }
+

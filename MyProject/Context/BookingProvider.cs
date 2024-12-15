@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyProject.Model;
 
+
 namespace MyProject.Context
 {
     public class BookingProvider
@@ -36,6 +37,9 @@ namespace MyProject.Context
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
         }
+
+      
+       
         public async Task<List<Booking>?> GetUsersBookingsAsync(User? user)
         {
 
@@ -65,6 +69,14 @@ namespace MyProject.Context
                 .Include(b => b.Stylist) // Include Stylist data
                 .ToListAsync();
         }
+
+        public async Task UpdateBookingAsync(Booking booking)
+        {
+            _context.Bookings.Update(booking);
+            await _context.SaveChangesAsync();
+        }
+
+        
 
     }
 }

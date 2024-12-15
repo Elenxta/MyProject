@@ -21,11 +21,6 @@
                     <DataAnnotationsValidator />
                     <ValidationSummary />
 
-                    @if (!string.IsNullOrEmpty(errorMessage))
-                    {
-                        <div class="alert alert-danger" role="alert">@errorMessage</div>
-                    }
-
                     <!-- Service Dropdown -->
                     <div class="form-group mb-4">
                         <label for="service" class="font-weight-bold text-pink">Select Service:</label>
@@ -112,6 +107,7 @@
         public int ServiceId { get; set; }
 
         [Required(ErrorMessage = "Please select a rating.")]
+        [Range(1, 5, ErrorMessage = "Please select a rating between 1 and 5.")]
         public int Rating { get; set; }
 
         [Required(ErrorMessage = "Please write a review.")]
@@ -120,11 +116,11 @@
 
         public string ImageBase64 { get; set; }
     }
-
     private ReviewModel review = new ReviewModel();
     private List<ReviewModel> reviews = new List<ReviewModel>();
     private List<Model.Service> services;
-    private string errorMessage;
+
+   
 
     protected override async Task OnInitializedAsync()
     {
@@ -134,38 +130,31 @@
 
     private async Task SubmitReview()
     {
+
         var image = string.IsNullOrEmpty(review.ImageBase64) ? null : review.ImageBase64;
 
         // Submit the review to the ReviewProvider
-        await ReviewProvider.CreateReviewAsync(review.ServiceId, review.Rating,review.ReviewText,review.ImageBase64);
+        await ReviewProvider.CreateReviewAsync(review.ServiceId, review.Rating, review.ReviewText, image);
 
         review = new ReviewModel(); // Reset the form
         await LoadReviews(); // Reload reviews after submission
     }
 
-  private async Task HandleFileSelected(InputFileChangeEventArgs e)
-{
-    // Get the selected file from the input event args.
-    var file = e.File;
-
-    // Check if the file is not null (i.e., a file was selected).
-    if (file != null)
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
-        // Use a MemoryStream to hold the file content in memory.
-        using (var stream = new MemoryStream())
+        var file = e.File;
+        if (file != null)
         {
-            // Asynchronously open the file stream and copy its contents to the MemoryStream.
-            await file.OpenReadStream().CopyToAsync(stream);
-
-            // Convert the MemoryStream byte array into a Base64 string and assign it to the review object.
-            review.ImageBase64 = Convert.ToBase64String(stream.ToArray());
+            using (var stream = new MemoryStream())
+            {
+                await file.OpenReadStream().CopyToAsync(stream);
+                review.ImageBase64 = Convert.ToBase64String(stream.ToArray());
+            }
         }
     }
-}
 
     private async Task LoadReviews()
     {
-        // Fetch reviews from the ReviewProvider
         var ShowReviews = await ReviewProvider.GetAllReviewsAsync();
         reviews = ShowReviews.Select(r => new ReviewModel
             {

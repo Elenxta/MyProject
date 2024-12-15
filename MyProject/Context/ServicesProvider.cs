@@ -11,7 +11,7 @@ namespace MyProject.Context
         {
             _context = context;
         }
-        
+
         public async Task<List<Service>> GetAllServicesAsync()
         {
             return await _context.Services.OrderBy(service => service.Id).ToListAsync();
@@ -25,5 +25,18 @@ namespace MyProject.Context
         {
             return await _context.Services.FindAsync(Id);
         }
+
+        public async Task RemoveServiceAsync(int serviceId)
+        {
+           
+                var service = await _context.Services.FindAsync(serviceId);
+                if (service != null)
+                {
+                    _context.Services.Remove(service);
+                    await _context.SaveChangesAsync();
+                }
+   
+
+         }
     }
 }

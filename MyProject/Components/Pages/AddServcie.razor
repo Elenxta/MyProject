@@ -7,46 +7,53 @@
 @inject ServicesProvider ServicesProvider 
 @inject NavigationManager NavigationManager
 
-
-<EditForm Model="@Model" OnValidSubmit="@HandleSubmit">
+<EditForm Model="@Model" OnValidSubmit="@HandleSubmit" >
     <DataAnnotationsValidator />
+    <ValidationSummary class="text-danger" /> <!-- Displays all validation errors -->
+
     <div class="container p-4">
         <div class="row justify-content-center">
             <div class="col-lg-8 col-12">
                 <div class="card shadow-lg border-0">
                     <div class="card-body bg-pink-light">
+                        <!-- Form Title -->
                         <h3 class="card-title text-center mb-4 text-pink">💖 Add a new service 💖</h3>
-                        
+
+                        <!-- Service Name Input -->
                         <div class="form-group mb-4">
                             <label for="name" class="form-label text-pink">Service Name</label>
                             <InputText id="name" class="form-control border-pink" @bind-Value="@Model.Name" placeholder="Enter service name" />
                             <ValidationMessage For="@(() => Model.Name)" class="text-danger small" />
                         </div>
 
+                        <!-- Description Input -->
                         <div class="form-group mb-4">
                             <label for="description" class="form-label text-pink">Description</label>
                             <InputTextArea id="description" class="form-control border-pink" @bind-Value="@Model.Description" rows="4" placeholder="Enter service description" />
                             <ValidationMessage For="@(() => Model.Description)" class="text-danger small" />
                         </div>
 
+                        <!-- Price Input -->
                         <div class="form-group mb-4">
                             <label for="price" class="form-label text-pink">Price</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-pink text-white">£</span>
-                                <InputNumber id="price" class="form-control border-pink" @bind-Value="@Model.Price" placeholder="Enter price (e.g., 9.99)" min="0.01" max="10000.00" step="0.01" />
+                                <InputNumber id="price" class="form-control border-pink" @bind-Value="@Model.Price" placeholder="Enter price (e.g., 9.99)" min="0.01" max="10000.00" />
                             </div>
                             <ValidationMessage For="@(() => Model.Price)" class="text-danger small" />
                         </div>
 
+                        <!-- Duration Input -->
                         <div class="form-group mb-4">
                             <label for="duration" class="form-label text-pink">Duration</label>
                             <InputText id="duration" class="form-control border-pink" @bind-Value="@FormattedDuration" />
                             <ValidationMessage For="@(() => Model.Duration)" class="text-danger small" />
                         </div>
 
+                        <!-- Submit Button -->
                         <div class="d-grid">
                             <button type="submit" class="btn btn-pink btn-lg">
-                                @(Service == null ? "Add Service" : "Update Service")
+                                Add Service
                             </button>
                         </div>
                     </div>
@@ -55,6 +62,8 @@
         </div>
     </div>
 </EditForm>
+
+<!-- Styles for form and input elements -->
 <style>
     .bg-pink-light {
         background-color: #f8d3e3; /* Light pink background */
@@ -87,6 +96,7 @@
         border-radius: 15px;
     }
 </style>
+
 @code {
     [Parameter]
     public Service? Service { get; set; }
@@ -96,9 +106,10 @@
     // This property handles the string input from the user and binds to TimeSpan
     private string FormattedDuration
     {
-        get => Model.Duration.ToString(@"hh\:mm");
+        get => Model.Duration.ToString(@"hh\:mm"); // Convert TimeSpan to a formatted string
         set
         {
+            // Parse input string into TimeSpan, if possible
             if (TimeSpan.TryParseExact(value, @"hh\:mm", null, out var parsedDuration))
             {
                 Model.Duration = parsedDuration;
@@ -106,32 +117,32 @@
         }
     }
 
+    // Initialize the form with existing service details or a new instance
     protected override void OnParametersSet()
     {
         Model = Service is null ? new ServiceModel() : new ServiceModel(Service);
         base.OnParametersSet();
     }
 
+    // Handle form submission
     private async Task HandleSubmit()
     {
         var service = Service ?? new Service();
 
+        // Map form model back to the service entity
         service.Name = Model.Name;
         service.Description = Model.Description;
         service.Price = Model.Price;
         service.Duration = Model.Duration;
 
-        if (service.Id == 0)
-        {
-            // Add new service
-            await ServicesProvider.AddService(service);
-            Model = new ServiceModel(); 
-        }
-       
-
-        NavigationManager.NavigateTo("/");
+        // Call provider to add the service
+        await ServicesProvider.AddService(service);
     }
 
+    // Handle invalid submission (triggered when validation fails)
+   
+
+    // Internal class to validate form inputs
     private sealed class ServiceModel
     {
         [Required(ErrorMessage = "Please enter the name of the service.")]
@@ -146,8 +157,10 @@
         [Required(ErrorMessage = "Please specify the duration of the service.")]
         public TimeSpan Duration { get; set; }
 
+        // Default constructor for a new service
         public ServiceModel() { }
 
+        // Constructor to map existing service details
         public ServiceModel(Service service)
         {
             Name = service.Name;
@@ -157,5 +170,6 @@
         }
     }
 }
+
 
 
