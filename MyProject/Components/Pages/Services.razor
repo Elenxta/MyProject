@@ -110,22 +110,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            // Check if the user is in the Admin role
+        
+           // Check if the user is in the Admin role
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
 
             isAdmin = user.IsInRole("Admin");
 
             // Load the list of services
-            services = await ServicesProvider.GetAllServicesAsync() ?? new List<Service>();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error loading services: {ex.Message}");
-            services = new List<Service>();
-        }
+            services = await ServicesProvider.GetAllServicesAsync();
+        
+        
     }
 
     private async Task RemoveService(int serviceId)
@@ -150,14 +145,10 @@
 
         // Ensure the service exists
         var service = await ServicesProvider.GetService(id);
-        if (service != null)
-        {
+        
+        
             NavigationManager.NavigateTo($"/Booking/{id}");
-        }
-        else
-        {
-            Console.WriteLine("Service does not exist.");
-        }
+       
     }
 }
 
